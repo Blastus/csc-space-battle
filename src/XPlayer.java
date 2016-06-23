@@ -27,15 +27,46 @@ class XPlayer {
     private double dirSpeed;
 
     XPlayer(Dimension size, XInput input, XVector position) {
+        this.size = size;
+        this.input = input;
+        this.position = position;
+        this.velocity = new XVector();
+        this.direction = INITIAL_PLAYER_DIRECTION;
+        this.dirSpeed = 0;
     }
 
     void move() {
+        // Take care of the brakes.
+        if (this.input.requestsSlow()) {
+            this.velocity.ipMul(SLOW_MULTIPLIER);
+            this.dirSpeed *= SLOW_MULTIPLIER;
+        }
+        // Take care of rotating the ship.
+        if (this.input.requestsLeft())
+            this.dirSpeed -= DIR_IMPULSE;
+        if (this.input.requestsRight())
+            this.dirSpeed += DIR_IMPULSE;
+        this.dirSpeed = Math.min(Math.max(this.dirSpeed, -DIR_LIMIT), +DIR_LIMIT);
+        // Handle requests to accelerate the ship.
+        if (this.input.requestsBurn()) {
+            this.velocity.ipAdd(XVector.polar(BURN_IMPULSE, XVector.CIRCLE_2_8 - this.direction));
+            this.velocity.clampMagnitude(SPEED_LIMIT);
+        }
+        // Update the ship's physics state.
+        this.position.ipAdd(this.velocity);
+        this.position.clampXY(this.size);
+        this.direction += this.dirSpeed;
     }
 
     void draw(Graphics surface) {
+        XPolygon shape = XPlayer.getShape(this.direction + XVector.CIRCLE_4_8);
+        shape.translate(this.position);
+        shape.draw(surface, SHIP_HIGHLIGHT, SHIP_COLOR);
     }
 
     private static XPolygon getShape(double direction) {
-        return SHAPE;
+        XPolygon shape = SHAPE.copy();
+        shape.rotate(-direction);
+        return shape;
     }
 }
