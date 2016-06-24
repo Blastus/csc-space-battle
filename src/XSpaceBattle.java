@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
  * Created by Stephen "Zero" Chappell on 27 May 2016.
  */
 class XSpaceBattle extends JFrame implements ActionListener {
+    static final XRandom CHAOS = new XRandom();
     private static final String WINDOW_TITLE = "Space Battle";
     private static final int CANVAS_WIDTH = 800;
     private static final int CANVAS_HEIGHT = 600;
@@ -15,6 +16,7 @@ class XSpaceBattle extends JFrame implements ActionListener {
     private final XInput input;
     private final Canvas context;
     private final XPlayer player;
+    private final XAsteroidManager asteroidManager;
     private final Timer updater;
 
     private XSpaceBattle() {
@@ -30,10 +32,13 @@ class XSpaceBattle extends JFrame implements ActionListener {
         this.pack();
         this.setResizable(false);
         this.setVisible(true);
+        Dimension size = this.context.getSize();
         this.player = new XPlayer(
-                this.context.getSize(),
+                size,
                 this.input,
-                new XVector(context.getWidth() >> 1, context.getHeight() >> 1));
+                new XVector(this.context.getWidth() >> 1, this.context.getHeight() >> 1));
+        this.asteroidManager = new XAsteroidManager(size, this.player);
+        this.asteroidManager.spawn();
         this.updater = new Timer(1000 / FRAMES_PER_SECOND, this);
         this.updater.start();
     }
@@ -50,8 +55,13 @@ class XSpaceBattle extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if (this.input.requestsExit())
             SwingUtilities.invokeLater(this::dispose);
-        this.player.move();
+        this.updatePhysics();
         this.updateGraphics();
+    }
+
+    private void updatePhysics() {
+        this.player.move();
+        this.asteroidManager.move();
     }
 
     private void updateGraphics() {
@@ -62,7 +72,13 @@ class XSpaceBattle extends JFrame implements ActionListener {
         // Fill in the background.
         surface.setColor(BACKGROUND_COLOR);
         surface.fillRect(0, 0, width, height);
-        this.player.draw(surface);
+        this.drawAllWorldObjects(surface);
         this.context.getGraphics().drawImage(buffer, 0, 0, null);
+    }
+
+    private void drawAllWorldObjects(Graphics surface) {
+        this.asteroidManager.draw(surface);
+        // Always draw the player last.
+        this.player.draw(surface);
     }
 }

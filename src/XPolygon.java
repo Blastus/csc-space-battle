@@ -15,6 +15,10 @@ class XPolygon {
         return new XPolygon(Arrays.stream(this.points).map(XVector::copy).toArray(XVector[]::new));
     }
 
+    void expand(double magnitude) {
+        Arrays.stream(this.points).forEach(point -> point.addMagnitude(magnitude));
+    }
+
     void rotate(double direction) {
         Arrays.stream(this.points).forEach(point -> point.addDirection(direction));
     }
@@ -23,13 +27,19 @@ class XPolygon {
         Arrays.stream(this.points).forEach(point -> point.ipAdd(position));
     }
 
+    void draw(Graphics surface, Color outline) {
+        this.draw(surface, outline, null);
+    }
+
     void draw(Graphics surface, Color outline, Color fill) {
         Polygon shape = new Polygon(
                 Arrays.stream(this.points).mapToInt(XVector::getIntX).toArray(),
                 Arrays.stream(this.points).mapToInt(XVector::getIntY).toArray(),
                 this.points.length);
-        surface.setColor(fill);
-        surface.fillPolygon(shape);
+        if (fill != null) {
+            surface.setColor(fill);
+            surface.fillPolygon(shape);
+        }
         surface.setColor(outline);
         surface.drawPolygon(shape);
     }
