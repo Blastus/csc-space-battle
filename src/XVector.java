@@ -37,12 +37,21 @@ class XVector {
         return (int) this.y;
     }
 
-    private double getMagnitude() {
+    void setXY(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    double getMagnitude() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
-    private void setMagnitude(double magnitude) {
+    void setMagnitude(double magnitude) {
         this.ipMul(magnitude / this.getMagnitude());
+    }
+
+    void addMagnitude(double magnitude) {
+        this.setMagnitude(this.getMagnitude() + magnitude);
     }
 
     private double getDirection() {
@@ -64,6 +73,19 @@ class XVector {
         return new XVector(this.x, this.y);
     }
 
+    XVector sub(double other) {
+        return new XVector(this.x - other, this.y - other);
+    }
+
+    XVector sub(XVector other) {
+        return new XVector(this.x - other.x, this.y - other.y);
+    }
+
+    void ipAdd(double other) {
+        this.x += other;
+        this.y += other;
+    }
+
     void ipAdd(XVector other) {
         this.x += other.x;
         this.y += other.y;
@@ -72,6 +94,11 @@ class XVector {
     void ipMul(double other) {
         this.x *= other;
         this.y *= other;
+    }
+
+    void random(Dimension size) {
+        this.x = XSpaceBattle.CHAOS.uniform(size.getWidth());
+        this.y = XSpaceBattle.CHAOS.uniform(size.getHeight());
     }
 
     void clampXY(Dimension size) {
