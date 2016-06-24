@@ -15,6 +15,10 @@ class XPolygon {
         return new XPolygon(Arrays.stream(this.points).map(XVector::copy).toArray(XVector[]::new));
     }
 
+    XVector getPoint(int offset) {
+        return this.points[offset];
+    }
+
     void expand(double magnitude) {
         Arrays.stream(this.points).forEach(point -> point.addMagnitude(magnitude));
     }

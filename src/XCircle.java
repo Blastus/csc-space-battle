@@ -41,7 +41,15 @@ class XCircle {
         return this.position.sub(other.position).getMagnitude() + other.radius <= this.radius - margin;
     }
 
+    boolean overlaps(XCircle other) {
+        return this.getMarginalDistance(other) < 0;
+    }
+
     boolean overlaps(XCircle other, double distanceScale) {
         return this.position.sub(other.position).getMagnitude() * distanceScale < this.radius + other.radius;
+    }
+
+    private double getMarginalDistance(XCircle other) {
+        return this.position.sub(other.position).getMagnitude() - this.radius - other.radius;
     }
 }

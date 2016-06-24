@@ -7,6 +7,8 @@ import java.util.stream.IntStream;
  * Created by Stephen "Zero" Chappell on 3 June 2016.
  */
 class XAsteroid {
+    private static final XColor DARK_GRAY = new XColor(30, 30, 30);
+    private static final XColor LIGHT_GRAY = new XColor(110, 110, 110);
     private static final int DESIRED_CRATER_COUNT = 5;
     private static final int PATIENCE = 50;
     private static final double MIN_CRATER_DIAMETER_RATIO = 0.75;
@@ -27,9 +29,7 @@ class XAsteroid {
         Graphics surface = this.buffer.getGraphics();
         // Draw the background.
         for (int size = this.shape.getDiameter(); size > 0; size -= 3) {
-            double ratio = 1.0 * size / this.shape.getDiameter();
-            int value = (int) (110 * (1 - ratio) + 30 * ratio);
-            surface.setColor(new Color(value, value, value));
+            surface.setColor(LIGHT_GRAY.interpolate(1.0 * size / this.shape.getDiameter(), DARK_GRAY).value());
             surface.fillOval(this.shape.getDiameter() - size >> 2, this.shape.getDiameter() - size >> 2, size, size);
         }
         // Make the craters.
@@ -40,18 +40,22 @@ class XAsteroid {
         int radius = this.shape.getRadius();
         IntStream.range(0, DESIRED_CRATER_COUNT).forEach(a -> {
             // Try to position craters so they do not overlap and are inside the asteroid.
-            for (int count = 0; count < PATIENCE; count++) {
-                craterDescription.setDiameter((int) (diameter * XSpaceBattle.CHAOS.uniform(
-                        MIN_CRATER_DIAMETER_RATIO,
-                        MAX_CRATER_DIAMETER_RATIO) / CRATER_DIAMETER_DIVISOR));
-                craterDescription.getPosition().setXY(
-                        XSpaceBattle.CHAOS.uniform(-radius, +radius),
-                        XSpaceBattle.CHAOS.uniform(-radius, +radius));
-                if (referenceShape.contains(craterDescription, craterDescription.getRadius()) && !craters.stream()
-                        .anyMatch(crater -> craterDescription.overlaps(crater, CRATER_DISTANCE_SCALE))) {
-                    craters.add(new XCrater(craterDescription));
-                    break;
-                }
+            try {
+                IntStream.range(0, PATIENCE).forEach(b -> {
+                    craterDescription.setDiameter((int) (diameter *
+                            XSpaceBattle.CHAOS.uniform(MIN_CRATER_DIAMETER_RATIO, MAX_CRATER_DIAMETER_RATIO) /
+                            CRATER_DIAMETER_DIVISOR));
+                    craterDescription.getPosition().setXY(
+                            XSpaceBattle.CHAOS.uniform(-radius, +radius),
+                            XSpaceBattle.CHAOS.uniform(-radius, +radius));
+                    if (referenceShape.contains(craterDescription, craterDescription.getRadius()) &&
+                            !craters.stream().anyMatch(crater -> craterDescription.overlaps(
+                                    crater,
+                                    CRATER_DISTANCE_SCALE)))
+                        throw new XEvent();
+                });
+            } catch (XEvent event) {
+                craters.add(new XCrater(craterDescription));
             }
         });
         // Draw the craters.
@@ -70,5 +74,25 @@ class XAsteroid {
     void draw(Graphics surface) {
         XVector position = this.shape.getPosition().sub(this.shape.getRadius());
         surface.drawImage(this.buffer, position.getIntX(), position.getIntY(), null);
+    }
+
+    XVector getPosition() {
+        return this.shape.getPosition();
+    }
+
+    int getRadius() {
+        return this.shape.getRadius();
+    }
+
+    XCircle getShape() {
+        return this.shape;
+    }
+
+    int getDiameter() {
+        return this.shape.getDiameter();
+    }
+
+    XVector getVelocity() {
+        return this.velocity;
     }
 }
