@@ -73,6 +73,15 @@ class XVector {
         return new XVector(this.x, this.y);
     }
 
+    void copy(XVector other) {
+        this.x = other.x;
+        this.y = other.y;
+    }
+
+    XVector add(XVector other) {
+        return new XVector(this.x + other.x, this.y + other.y);
+    }
+
     XVector sub(double other) {
         return new XVector(this.x - other, this.y - other);
     }

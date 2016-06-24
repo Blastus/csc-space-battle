@@ -12,11 +12,13 @@ class XSpaceBattle extends JFrame implements ActionListener {
     private static final int CANVAS_WIDTH = 800;
     private static final int CANVAS_HEIGHT = 600;
     private static final int FRAMES_PER_SECOND = 40;
-    private static final Color BACKGROUND_COLOR = Color.BLACK;
+    private static final Color BACKGROUND_COLOR = XColor.BLACK.value();
+    private static final int DEATH_HANDLER_DELAY = XPlayer.DEATH_LIFE_SPAN + 3000;
     private final XInput input;
     private final Canvas context;
     private final XPlayer player;
     private final XAsteroidManager asteroidManager;
+    private final XWeaponManager weaponManager;
     private final Timer updater;
 
     private XSpaceBattle() {
@@ -36,10 +38,23 @@ class XSpaceBattle extends JFrame implements ActionListener {
         this.player = new XPlayer(
                 size,
                 this.input,
-                new XVector(this.context.getWidth() >> 1, this.context.getHeight() >> 1));
+                new XVector(this.context.getWidth() >> 1, this.context.getHeight() >> 1),
+                () -> {
+                    Timer resuscitator = new Timer(DEATH_HANDLER_DELAY, this);
+                    resuscitator.setActionCommand("revive");
+                    resuscitator.setRepeats(false);
+                    resuscitator.start();
+                }
+        );
         this.asteroidManager = new XAsteroidManager(size, this.player);
-        this.asteroidManager.spawn();
+        this.weaponManager = new XWeaponManager(
+                size,
+                this.asteroidManager,
+                this.input,
+                this.player
+        );
         this.updater = new Timer(1000 / FRAMES_PER_SECOND, this);
+        this.updater.setActionCommand("update");
         this.updater.start();
     }
 
@@ -53,15 +68,28 @@ class XSpaceBattle extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent event) {
-        if (this.input.requestsExit())
-            SwingUtilities.invokeLater(this::dispose);
-        this.updatePhysics();
-        this.updateGraphics();
+        switch (event.getActionCommand()) {
+            case "update":
+                if (this.input.requestsExit())
+                    SwingUtilities.invokeLater(this::dispose);
+                this.updatePhysics();
+                this.updateGraphics();
+                break;
+            case "revive":
+                this.player.revive();
+                break;
+            default:
+                throw new RuntimeException("action command was not recognized");
+        }
     }
 
     private void updatePhysics() {
+        long currentTime = System.currentTimeMillis();
         this.player.move();
+        this.weaponManager.handleFireRequest(currentTime);
         this.asteroidManager.move();
+        this.weaponManager.move(currentTime);
+        this.asteroidManager.ensureAsteroidAvailability();
     }
 
     private void updateGraphics() {
@@ -78,6 +106,7 @@ class XSpaceBattle extends JFrame implements ActionListener {
 
     private void drawAllWorldObjects(Graphics surface) {
         this.asteroidManager.draw(surface);
+        this.weaponManager.drawProjectiles(surface);
         // Always draw the player last.
         this.player.draw(surface);
     }

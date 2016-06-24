@@ -11,6 +11,7 @@ class XInput implements KeyListener {
     private boolean requestSlow;
     private boolean requestLeft;
     private boolean requestRight;
+    private boolean requestFire;
     private boolean requestBurn;
 
     XInput() {
@@ -18,6 +19,7 @@ class XInput implements KeyListener {
         this.requestSlow = false;
         this.requestLeft = false;
         this.requestRight = false;
+        this.requestFire = false;
         this.requestBurn = false;
     }
 
@@ -36,6 +38,9 @@ class XInput implements KeyListener {
                 break;
             case KeyEvent.VK_RIGHT:
                 this.requestRight = true;
+                break;
+            case KeyEvent.VK_SPACE:
+                this.requestFire = true;
                 break;
             case KeyEvent.VK_UP:
                 this.requestBurn = true;
@@ -57,6 +62,9 @@ class XInput implements KeyListener {
                 break;
             case KeyEvent.VK_RIGHT:
                 this.requestRight = false;
+                break;
+            case KeyEvent.VK_SPACE:
+                this.requestFire = false;
                 break;
             case KeyEvent.VK_UP:
                 this.requestBurn = false;
@@ -80,6 +88,10 @@ class XInput implements KeyListener {
 
     boolean requestsRight() {
         return this.requestRight;
+    }
+
+    boolean requestsFire() {
+        return this.requestFire;
     }
 
     boolean requestsBurn() {
