@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
  * Created by Stephen "Zero" Chappell on 3 June 2016.
  */
 class XAsteroidManager {
-    private static final int STARTING_ASTEROID_COUNT = 4;
+    private static final int STARTING_ASTEROID_COUNT = 2;
     private static final int ASTEROID_COUNT_INCREMENT = 1;
     private static final int STARTING_ASTEROID_DIAMETER = 50;
     private static final int CAN_CREATE_FRAGMENTS = 25;
@@ -64,6 +64,19 @@ class XAsteroidManager {
 
     void draw(Graphics surface) {
         this.asteroids.stream().forEach(asteroid -> asteroid.draw(surface));
+    }
+
+    XAsteroid findClosest(XVector position) {
+        XAsteroid match = null;
+        double distance = Double.POSITIVE_INFINITY;
+        for (XAsteroid asteroid : this.asteroids) {
+            double difference = position.sub(asteroid.getPosition()).getMagnitude() - asteroid.getRadius();
+            if (difference < distance) {
+                match = asteroid;
+                distance = difference;
+            }
+        }
+        return match;
     }
 
     ArrayList<XAsteroid> findInRange(XWeapon weapon) {

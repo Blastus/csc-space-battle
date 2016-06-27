@@ -29,6 +29,14 @@ class XVector {
         return new XVector(magnitude * Math.sin(direction), magnitude * Math.cos(direction));
     }
 
+    double getX() {
+        return this.x;
+    }
+
+    double getY() {
+        return this.y;
+    }
+
     int getIntX() {
         return (int) this.x;
     }
@@ -54,12 +62,12 @@ class XVector {
         this.setMagnitude(this.getMagnitude() + magnitude);
     }
 
-    private double getDirection() {
+    double getDirection() {
         return Math.atan2(this.x, this.y);
     }
 
 
-    private void setDirection(double direction) {
+    void setDirection(double direction) {
         double magnitude = this.getMagnitude();
         this.x = magnitude * Math.sin(direction);
         this.y = magnitude * Math.cos(direction);
@@ -76,6 +84,10 @@ class XVector {
     void copy(XVector other) {
         this.x = other.x;
         this.y = other.y;
+    }
+
+    XVector add(double other) {
+        return new XVector(this.x + other, this.y + other);
     }
 
     XVector add(XVector other) {

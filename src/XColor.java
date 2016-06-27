@@ -25,6 +25,16 @@ class XColor {
         this.blue = blue;
     }
 
+    static XColor interpolate(double bias, XColor... colors) {
+        if (bias >= 1)
+            return colors[colors.length - 1];
+        double portion = 1.0 / (colors.length - 1);
+        int index = (int) (bias / portion);
+        XColor first = colors[index];
+        XColor second = colors[index + 1];
+        return first.interpolate(bias % portion / portion, second);
+    }
+
     Color value() {
         return new Color(this.red, this.green, this.blue);
     }

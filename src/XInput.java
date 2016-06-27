@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
  * Created by Stephen "Zero" Chappell on 27 May 2016.
  */
 class XInput implements KeyListener {
+    private int weaponOffset;
     // Request Flags
     private boolean requestExit;
     // Stateful Values
@@ -15,6 +16,7 @@ class XInput implements KeyListener {
     private boolean requestBurn;
 
     XInput() {
+        this.weaponOffset = 0;
         this.requestExit = false;
         this.requestSlow = false;
         this.requestLeft = false;
@@ -25,6 +27,19 @@ class XInput implements KeyListener {
 
     public void keyPressed(KeyEvent event) {
         switch (event.getKeyCode()) {
+            case KeyEvent.VK_1:
+            case KeyEvent.VK_2:
+            case KeyEvent.VK_3:
+            case KeyEvent.VK_4:
+            case KeyEvent.VK_5:
+            case KeyEvent.VK_6:
+            case KeyEvent.VK_7:
+            case KeyEvent.VK_8:
+            case KeyEvent.VK_9:
+                this.weaponOffset = Math.min(
+                        Character.getNumericValue(event.getKeyChar()),
+                        XWeaponManager.SUPPORTED_WEAPONS) - 1;
+                break;
             // Handle changing request flags.
             case KeyEvent.VK_ESCAPE:
                 this.requestExit = true;
@@ -70,6 +85,10 @@ class XInput implements KeyListener {
                 this.requestBurn = false;
                 break;
         }
+    }
+
+    int requestsWeapon() {
+        return this.weaponOffset;
     }
 
     boolean requestsExit() {
