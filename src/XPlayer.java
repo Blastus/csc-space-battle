@@ -6,8 +6,8 @@ import java.awt.*;
 class XPlayer {
     static final int DEATH_LIFE_SPAN = 2000;
     static final int RADIUS = 14;
-    private static final XColor SHIP_HIGHLIGHT = XColor.LIGHT_GRAY;
-    private static final XColor SHIP_COLOR = XColor.BLUE;
+    static final XColor SHIP_HIGHLIGHT = XColor.LIGHT_GRAY;
+    static final XColor SHIP_COLOR = XColor.BLUE;
     private static final double INITIAL_PLAYER_DIRECTION = XVector.CIRCLE_6_8;
     private static final double SLOW_MULTIPLIER = 0.95;
     private static final double BURN_IMPULSE = 0.25;
@@ -51,6 +51,12 @@ class XPlayer {
                 MOTOR_PARTICLE_DEVIANCE);
         this.handleDeath = handleDeath;
         this.revive();
+    }
+
+    static XPolygon getShape(double direction) {
+        XPolygon shape = SHAPE.copy();
+        shape.rotate(-direction);
+        return shape;
     }
 
     void move() {
@@ -122,22 +128,16 @@ class XPlayer {
         }
     }
 
-    private static XPolygon getShape(double direction) {
-        XPolygon shape = SHAPE.copy();
-        shape.rotate(-direction);
-        return shape;
-    }
-
-    XVector getPosition() {
-        return this.position;
-    }
-
     double getDirection() {
         return this.direction;
     }
 
     XVector getVelocity() {
         return this.velocity;
+    }
+
+    XVector getPosition() {
+        return this.position;
     }
 
     boolean isAlive() {

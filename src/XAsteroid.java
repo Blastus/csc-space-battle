@@ -52,9 +52,9 @@ class XAsteroid {
                             !craters.stream().anyMatch(crater -> craterDescription.overlaps(
                                     crater,
                                     CRATER_DISTANCE_SCALE)))
-                        throw new XEvent();
+                        throw new XFoundEvent();
                 });
-            } catch (XEvent event) {
+            } catch (XFoundEvent event) {
                 craters.add(new XCrater(craterDescription));
             }
         });
