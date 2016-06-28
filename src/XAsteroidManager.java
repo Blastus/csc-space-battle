@@ -93,8 +93,14 @@ class XAsteroidManager {
         deadAsteroids.forEach(asteroid -> {
             int diameter = asteroid.getDiameter();
             int radius = asteroid.getRadius();
-            int lifeSpan = diameter * TIME_MULTIPLIER + ADDITIONAL_TIME;
-            this.specialEffects.spawn(asteroid.getPosition(), diameter, radius, radius, lifeSpan, currentTime);
+            this.specialEffects.spawn(
+                    asteroid.getPosition(),
+                    diameter,
+                    radius,
+                    radius,
+                    diameter * TIME_MULTIPLIER + ADDITIONAL_TIME,
+                    XSpecialEffects.WARM,
+                    currentTime);
             // Create debris from the destruction.
             this.specialEffects.spawn(asteroid, currentTime);
             this.createFragments(asteroid);
@@ -112,6 +118,10 @@ class XAsteroidManager {
                 this.asteroids.add(new XAsteroid(new XCircle(position, asteroid.getRadius()), velocity));
             });
         }
+    }
+
+    ArrayList<XAsteroid> getAsteroids() {
+        return this.asteroids;
     }
 
     void ensureAsteroidAvailability() {

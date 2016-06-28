@@ -25,6 +25,10 @@ class XColor {
         this.blue = blue;
     }
 
+    private XColor(double red, double green, double blue) {
+        this(XColor.clamp(red), XColor.clamp(green), XColor.clamp(blue));
+    }
+
     static XColor interpolateRandom(XColor... colors) {
         return XColor.interpolate(XSpaceBattle.CHAOS.random(), colors);
     }
@@ -37,6 +41,14 @@ class XColor {
         XColor first = colors[index];
         XColor second = colors[index + 1];
         return first.interpolate(bias % portion / portion, second);
+    }
+
+    static XColor random() {
+        return new XColor(XSpaceBattle.CHAOS.random(), XSpaceBattle.CHAOS.random(), XSpaceBattle.CHAOS.random());
+    }
+
+    private static int clamp(double value) {
+        return (int) Math.round(Math.min(Math.max(value, 0.0), 1.0) * 255);
     }
 
     Color value() {

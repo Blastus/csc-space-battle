@@ -5,27 +5,32 @@ import java.util.stream.IntStream;
  * Created by Stephen "Zero" Chappell on 10 June 2016.
  */
 class XExplosion {
-    private static final double START_SIZE = 0.5;
+    static final double START_SIZE = 0.5;
     private static final double MIDDLE_BIAS = 0.2;
     private static final double STOP_SIZE = 0.1;
     private static final double MIDDLE_SIZE = 1.0;
-    private static final XColor[] PALETTE = {
-            XColor.RED,
-            XColor.YELLOW
-    };
     private final XVector position;
     private final int effectSize;
     private final int particleSize;
     private final int particleCount;
     private final int lifeSpan;
+    private final XColor[] palette;
     private final long bornTime;
 
-    XExplosion(XVector position, int effectSize, int particleSize, int particleCount, int lifeSpan, long currentTime) {
+    XExplosion(
+            XVector position,
+            int effectSize,
+            int particleSize,
+            int particleCount,
+            int lifeSpan,
+            XColor[] palette,
+            long currentTime) {
         this.position = position;
         this.effectSize = effectSize;
         this.particleSize = particleSize;
         this.particleCount = particleCount;
         this.lifeSpan = lifeSpan;
+        this.palette = palette;
         this.bornTime = currentTime;
     }
 
@@ -39,7 +44,7 @@ class XExplosion {
         int particleDiameter = (int) currentParticleSize;
         double particleRadius = currentParticleSize / 2;
         IntStream.range(0, this.particleCount).forEach(a -> {
-            surface.setColor(XColor.interpolateRandom(PALETTE).value());
+            surface.setColor(XColor.interpolateRandom(this.palette).value());
             XVector offset = XVector.polar(
                     XSpaceBattle.CHAOS.uniform(currentEffectSize),
                     XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8));
