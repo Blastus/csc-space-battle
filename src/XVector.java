@@ -133,4 +133,8 @@ class XVector {
         if (this.getMagnitude() > magnitude)
             this.setMagnitude(magnitude);
     }
+
+    boolean inBox(double minX, double minY, double maxX, double maxY) {
+        return minX <= this.x && this.x <= maxX && minY <= this.y && this.y <= maxY;
+    }
 }

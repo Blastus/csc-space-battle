@@ -17,15 +17,16 @@ class XSpaceBattle extends JFrame implements ActionListener {
     private static final XColor POINTS_COLOR = XColor.GREEN;
     private static final Color BACKGROUND_COLOR = XColor.BLACK.value();
     private static final int DEATH_HANDLER_DELAY = XPlayer.DEATH_LIFE_SPAN + 3000;
-    private static final String WEAPON_CANVAS_ANCHOR = "NORTH_WEST";
-    private static final String WEAPON_STRING_ANCHOR = "NORTH_WEST";
+    private static final XAnchor WEAPON_CANVAS_ANCHOR = XAnchor.NORTH_WEST;
+    private static final XAnchor WEAPON_STRING_ANCHOR = XAnchor.NORTH_WEST;
     private static final XVector WEAPON_OFFSET = new XVector(+20, +40);
-    private static final String POINTS_CANVAS_ANCHOR = "NORTH_EAST";
-    private static final String POINTS_STRING_ANCHOR = "NORTH_EAST";
+    private static final XAnchor POINTS_CANVAS_ANCHOR = XAnchor.NORTH_EAST;
+    private static final XAnchor POINTS_STRING_ANCHOR = XAnchor.NORTH_EAST;
     private static final XVector POINTS_OFFSET = new XVector(-20, +40);
     private static final XVector WEAPON_STATUS_OFFSET = new XVector(+20, -10);
     private final XInput input;
     private final Canvas context;
+    private final XSpecialEffects specialEffects;
     private final XPlayer player;
     private final XAsteroidManager asteroidManager;
     private final XHealthManager healthManager;
@@ -48,10 +49,12 @@ class XSpaceBattle extends JFrame implements ActionListener {
         this.setResizable(false);
         this.setVisible(true);
         Dimension size = this.context.getSize();
+        this.specialEffects = new XSpecialEffects(size);
         this.player = new XPlayer(
                 size,
                 this.input,
                 new XVector(this.context.getWidth() >> 1, this.context.getHeight() >> 1),
+                this.specialEffects,
                 () -> {
                     Timer resuscitator = new Timer(DEATH_HANDLER_DELAY, this);
                     resuscitator.setActionCommand("revive");
@@ -59,7 +62,7 @@ class XSpaceBattle extends JFrame implements ActionListener {
                     resuscitator.start();
                 }
         );
-        this.asteroidManager = new XAsteroidManager(size, this.player);
+        this.asteroidManager = new XAsteroidManager(size, this.player, this.specialEffects);
         this.healthManager = new XHealthManager(
                 size,
                 XPlayer.getShape(XVector.CIRCLE_2_8));
@@ -71,6 +74,7 @@ class XSpaceBattle extends JFrame implements ActionListener {
                 this.player);
         this.weaponWriter = new XTextWriter(size, TEXT_STYLE, WEAPON_COLOR);
         this.pointsWriter = new XTextWriter(size, TEXT_STYLE, POINTS_COLOR);
+        // Must invoke dispose later so that it does not happen in the middle of a XEngine update.
         this.updater = new Timer(1000 / FRAMES_PER_SECOND, this);
         this.updater.setActionCommand("update");
         this.updater.start();
@@ -109,8 +113,9 @@ class XSpaceBattle extends JFrame implements ActionListener {
     private void updatePhysics(long currentTime) {
         this.player.move();
         this.weaponManager.handleFireRequest(currentTime);
-        this.asteroidManager.move();
+        this.asteroidManager.move(currentTime);
         this.weaponManager.move(currentTime);
+        this.specialEffects.moveDebris();
         this.asteroidManager.ensureAsteroidAvailability();
     }
 
@@ -129,7 +134,9 @@ class XSpaceBattle extends JFrame implements ActionListener {
 
     private void drawAllWorldObjects(Graphics surface, long currentTime) {
         this.asteroidManager.draw(surface);
+        this.specialEffects.drawDebris(surface, currentTime);
         this.weaponManager.drawProjectiles(surface, currentTime);
+        this.specialEffects.drawExplosions(surface, currentTime);
         // Always draw the player last.
         this.player.draw(surface);
     }

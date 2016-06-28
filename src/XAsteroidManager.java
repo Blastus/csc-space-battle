@@ -14,6 +14,8 @@ class XAsteroidManager {
     private static final int CAN_CREATE_FRAGMENTS = 25;
     private static final int STARTING_ASTEROID_SPEED = 2;
     private static final int SAFETY_SCALE = 3;
+    private static final int TIME_MULTIPLIER = 20;
+    private static final int ADDITIONAL_TIME = 200;
     private static final double[] FRAGMENT_SPEED_MULTIPLIERS = {
             1.5,
             2.0
@@ -21,14 +23,16 @@ class XAsteroidManager {
     private final Dimension size;
     private final int asteroidCountIncrement;
     private final XPlayer player;
+    private final XSpecialEffects specialEffects;
     private final ArrayList<XAsteroid> asteroids;
     private int currentAsteroidCount;
 
-    XAsteroidManager(Dimension size, XPlayer player) {
+    XAsteroidManager(Dimension size, XPlayer player, XSpecialEffects specialEffects) {
         this.size = size;
         this.currentAsteroidCount = STARTING_ASTEROID_COUNT;
         this.asteroidCountIncrement = ASTEROID_COUNT_INCREMENT;
         this.player = player;
+        this.specialEffects = specialEffects;
         this.asteroids = new ArrayList<>();
         this.spawn();
     }
@@ -48,7 +52,7 @@ class XAsteroidManager {
         this.currentAsteroidCount += this.asteroidCountIncrement;
     }
 
-    void move() {
+    void move(long currentTime) {
         XCircle playerShape = this.player.isAlive() ?
                 new XCircle(this.player.getPosition(), XPlayer.RADIUS << 1) :
                 null;
@@ -57,8 +61,8 @@ class XAsteroidManager {
             return playerShape != null && asteroid.getShape().overlaps(playerShape);
         }).collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
         if (collisions.size() > 0) {
-            this.player.kill();
-            this.destroy(collisions);
+            this.player.kill(currentTime);
+            this.destroy(collisions, currentTime);
         }
     }
 
@@ -85,8 +89,16 @@ class XAsteroidManager {
                 .collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
     }
 
-    void destroy(ArrayList<XAsteroid> deadAsteroids) {
-        deadAsteroids.forEach(this::createFragments);
+    void destroy(ArrayList<XAsteroid> deadAsteroids, long currentTime) {
+        deadAsteroids.forEach(asteroid -> {
+            int diameter = asteroid.getDiameter();
+            int radius = asteroid.getRadius();
+            int lifeSpan = diameter * TIME_MULTIPLIER + ADDITIONAL_TIME;
+            this.specialEffects.spawn(asteroid.getPosition(), diameter, radius, radius, lifeSpan, currentTime);
+            // Create debris from the destruction.
+            this.specialEffects.spawn(asteroid, currentTime);
+            this.createFragments(asteroid);
+        });
         this.asteroids.removeAll(deadAsteroids);
     }
 

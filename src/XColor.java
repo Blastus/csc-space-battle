@@ -25,6 +25,10 @@ class XColor {
         this.blue = blue;
     }
 
+    static XColor interpolateRandom(XColor... colors) {
+        return XColor.interpolate(XSpaceBattle.CHAOS.random(), colors);
+    }
+
     static XColor interpolate(double bias, XColor... colors) {
         if (bias >= 1)
             return colors[colors.length - 1];
