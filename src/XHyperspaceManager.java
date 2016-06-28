@@ -5,17 +5,17 @@ import java.util.stream.IntStream;
  * Created by Stephen "Zero" Chappell on 9 June 2016.
  */
 class XHyperspaceManager {
-    static int LIVING_LIFE_SPAN;
-    private static long HYPERSPACE_RESET;
+    static int LIVING_LIFE_SPAN = 1500;
+    private static long HYPERSPACE_RESET = 5000;
     private static int PATIENCE = 50;
-    private static int SAFETY_FACTOR;
-    private static int LIVING_EFFECT_SIZE;
-    private static int LIVING_PARTICLE_SIZE;
-    private static int LIVING_PARTICLE_COUNT;
-    private static int DEAD_EFFECT_SIZE;
-    private static int DEAD_PARTICLE_SIZE;
-    private static int DEAD_PARTICLE_COUNT;
-    private static int DEAD_LIFE_SPAN;
+    private static int SAFETY_FACTOR = 3;
+    private static int LIVING_EFFECT_SIZE = 25;
+    private static int LIVING_PARTICLE_SIZE = 15;
+    private static int LIVING_PARTICLE_COUNT = 35;
+    private static int DEAD_EFFECT_SIZE = 35;
+    private static int DEAD_PARTICLE_SIZE = 15;
+    private static int DEAD_PARTICLE_COUNT = 60;
+    private static int DEAD_LIFE_SPAN = 3000;
     private final Dimension size;
     private final XInput input;
     private final XPlayer player;
@@ -43,13 +43,18 @@ class XHyperspaceManager {
     }
 
     void resetTimer(long currentTime) {
+        this.hyperspaceTimer = currentTime;
     }
 
     boolean available(long currentTime) {
-        return true;
+        return this.hyperspaceTimer <= currentTime;
     }
 
     void handlePanicRequest(long currentTime) {
+        if (this.input.requestsPanic() && this.available(currentTime) && this.player.isAlive()) {
+            this.hyperspaceTimer = currentTime + HYPERSPACE_RESET;
+            this.initiateHyperspaceJump(currentTime);
+        }
     }
 
     boolean initiateHyperspaceJump(long currentTime) {
