@@ -7,6 +7,8 @@ import java.awt.event.KeyListener;
 class XInput implements KeyListener {
     private int weaponOffset;
     // Request Flags
+    private boolean requestPanic;
+    private boolean requestToggleEffects;
     private boolean requestExit;
     // Stateful Values
     private boolean requestSlow;
@@ -17,6 +19,8 @@ class XInput implements KeyListener {
 
     XInput() {
         this.weaponOffset = 0;
+        this.requestPanic = false;
+        this.requestToggleEffects = false;
         this.requestExit = false;
         this.requestSlow = false;
         this.requestLeft = false;
@@ -41,6 +45,12 @@ class XInput implements KeyListener {
                         XWeaponManager.SUPPORTED_WEAPONS) - 1;
                 break;
             // Handle changing request flags.
+            case KeyEvent.VK_P:
+                this.requestPanic = true;
+                break;
+            case KeyEvent.VK_Z:
+                this.requestToggleEffects = true;
+                break;
             case KeyEvent.VK_ESCAPE:
                 this.requestExit = true;
                 break;
@@ -89,6 +99,18 @@ class XInput implements KeyListener {
 
     int requestsWeapon() {
         return this.weaponOffset;
+    }
+
+    boolean requestsPanic() {
+        boolean panic = this.requestPanic;
+        this.requestPanic = false;
+        return panic;
+    }
+
+    boolean requestsToggleEffects() {
+        boolean toggleEffects = this.requestToggleEffects;
+        this.requestToggleEffects = false;
+        return toggleEffects;
     }
 
     boolean requestsExit() {

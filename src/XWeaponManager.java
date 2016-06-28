@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 /*
  * Created by Stephen "Zero" Chappell on 6 June 2016.
@@ -7,6 +8,9 @@ import java.util.ArrayList;
 class XWeaponManager {
     static final int MAX_WEAPON_SPEED = 15;
     private static final int MAX_WEAPON_COUNT = 200;
+    private static final int HYPERSPACE_STORM_EFFECT_SIZE = 15;
+    private static final int HYPERSPACE_STORM_PARTICLE_SIZE = 10;
+    private static final int HYPERSPACE_STORM_PARTICLE_COUNT = 10;
     private static final int STATUS_WIDTH = 200;
     private static final int STATUS_HEIGHT = 20;
     private static final XColor[] STATUS_PALETTE = {
@@ -17,19 +21,23 @@ class XWeaponManager {
     private static final int[] WEAPON_COOLING_TIMES = {
             XRotaryCannon.COOLING_TIME,
             XGuidedMissile.COOLING_TIME,
-            XSpaceMine.COOLING_TIME
+            XSpaceMine.COOLING_TIME,
+            XClusterCrack.COOLING_TIME
     };
     static final int SUPPORTED_WEAPONS = WEAPON_COOLING_TIMES.length;
     private static final String[] WEAPON_NAMES = {
             "Rotary Cannon",
             "Guided Missile",
-            "Space Mine"
+            "Space Mine",
+            "Cluster Crack"
     };
+    private static final int HYPERSPACE_STORM_SIZE = 50;
     private final Dimension size;
     private final XAsteroidManager asteroidManager;
     private final XHealthManager healthManager;
     private final XInput input;
     private final XPlayer player;
+    private final XSpecialEffects specialEffects;
     private final ArrayList<XWeapon> weapons;
     private final ArrayList<XWeapon> newWeapons;
     private long lastFireTime;
@@ -39,13 +47,15 @@ class XWeaponManager {
             XAsteroidManager asteroidManager,
             XHealthManager healthManager,
             XInput input,
-            XPlayer player
+            XPlayer player,
+            XSpecialEffects specialEffects
     ) {
         this.size = size;
         this.asteroidManager = asteroidManager;
         this.healthManager = healthManager;
         this.input = input;
         this.player = player;
+        this.specialEffects = specialEffects;
         this.weapons = new ArrayList<>();
         this.lastFireTime = 0;
         this.newWeapons = new ArrayList<>();
@@ -132,6 +142,10 @@ class XWeaponManager {
                     // Space Mine
                     this.newWeapons.add(new XSpaceMine(this.player.getPosition().copy(), currentTime));
                     break;
+                case 3:
+                    // Cluster Crack
+                    this.newWeapons.addAll(XClusterCrack.fire(this.player, currentTime));
+                    break;
                 default:
                     throw new RuntimeException("requested weapon case was not handled");
             }
@@ -146,5 +160,24 @@ class XWeaponManager {
         return this.player.getVelocity().add(XVector.polar(
                 MAX_WEAPON_SPEED,
                 XVector.CIRCLE_2_8 - this.player.getDirection()));
+    }
+
+    void initiateHyperspaceStorm(long currentTime) {
+        IntStream.range(0, HYPERSPACE_STORM_SIZE).forEach(a -> {
+            XVector position = new XVector();
+            position.random(this.size);
+            this.specialEffects.spawn(
+                    position,
+                    HYPERSPACE_STORM_EFFECT_SIZE,
+                    HYPERSPACE_STORM_PARTICLE_SIZE,
+                    HYPERSPACE_STORM_PARTICLE_COUNT,
+                    XHyperspaceManager.LIVING_LIFE_SPAN,
+                    XSpecialEffects.COOL,
+                    currentTime);
+            this.weapons.add(new XWeapon(
+                    position,
+                    (int) (HYPERSPACE_STORM_EFFECT_SIZE * XExplosion.START_SIZE),
+                    currentTime));
+        });
     }
 }

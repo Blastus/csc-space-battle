@@ -42,8 +42,15 @@ class XPlayer {
     private double direction;
     private double dirSpeed;
     private boolean alive;
+    private XHyperspaceManager hyperspaceManager;
 
-    XPlayer(Dimension size, XInput input, XVector position, XSpecialEffects specialEffects, Runnable handleDeath) {
+    XPlayer(
+            Dimension size,
+            XInput input,
+            XVector position,
+            XSpecialEffects specialEffects,
+            Runnable handleDeath,
+            long currentTime) {
         this.size = size;
         this.input = input;
         this.position = position;
@@ -55,7 +62,8 @@ class XPlayer {
                 MOTOR_PARTICLE_DEVIANCE);
         this.specialEffects = specialEffects;
         this.handleDeath = handleDeath;
-        this.revive();
+        this.hyperspaceManager = null;
+        this.revive(currentTime);
     }
 
     static XPolygon getShape(double direction) {
@@ -64,16 +72,18 @@ class XPlayer {
         return shape;
     }
 
-    void move() {
+    void move(long currentTime) {
         if (this.alive) {
             if (this.input.requestsSlow()) {
                 this.velocity.ipMul(SLOW_MULTIPLIER);
                 this.dirSpeed *= SLOW_MULTIPLIER;
             }
-            if (this.input.requestsBurn()) {
-                this.velocity.ipAdd(XVector.polar(BURN_IMPULSE, XVector.CIRCLE_2_8 - this.direction));
-                // Obey the speed limit.
-                this.velocity.clampMagnitude(SPEED_LIMIT);
+            if (this.hyperspaceManager.available(currentTime)) {
+                if (this.input.requestsBurn()) {
+                    this.velocity.ipAdd(XVector.polar(BURN_IMPULSE, XVector.CIRCLE_2_8 - this.direction));
+                    // Obey the speed limit.
+                    this.velocity.clampMagnitude(SPEED_LIMIT);
+                }
             }
             // Handle rotations.
             if (this.input.requestsLeft())
@@ -88,10 +98,11 @@ class XPlayer {
         }
     }
 
-    void draw(Graphics surface) {
+    void draw(Graphics surface, long currentTime) {
         if (this.alive) {
             double direction = this.direction + XVector.CIRCLE_4_8;
-            if (this.input.requestsBurn())
+            boolean enabled = this.hyperspaceManager.available(currentTime);
+            if (enabled && this.input.requestsBurn())
                 this.motor.draw(surface, direction);
             XPolygon shape = XPlayer.getShape(direction);
             // Draw the brakes.
@@ -129,7 +140,10 @@ class XPlayer {
                     reactor.draw(surface, direction - XVector.CIRCLE_2_8);
                 }
             }
-            shape.draw(surface, SHIP_HIGHLIGHT.value(), SHIP_COLOR.value());
+            shape.draw(
+                    surface,
+                    (enabled ? SHIP_HIGHLIGHT : XColor.random()).value(),
+                    (enabled ? SHIP_COLOR : XColor.random()).value());
         }
     }
 
@@ -149,6 +163,10 @@ class XPlayer {
         return this.alive;
     }
 
+    void setHyperspaceManager(XHyperspaceManager hyperspaceManager) {
+        this.hyperspaceManager = hyperspaceManager;
+    }
+
     void kill(long currentTime) {
         this.alive = false;
         this.specialEffects.spawn(
@@ -157,15 +175,17 @@ class XPlayer {
                 DEATH_PARTICLE_SIZE,
                 DEATH_PARTICLE_COUNT,
                 DEATH_LIFE_SPAN,
-                currentTime
-        );
+                XSpecialEffects.WARM,
+                currentTime);
         this.handleDeath.run();
     }
 
-    void revive() {
+    void revive(long currentTime) {
         this.velocity = new XVector();
         this.direction = INITIAL_PLAYER_DIRECTION;
         this.dirSpeed = 0;
         this.alive = true;
+        if (this.hyperspaceManager != null)
+            this.hyperspaceManager.resetTimer(currentTime);
     }
 }

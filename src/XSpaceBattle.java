@@ -31,6 +31,7 @@ class XSpaceBattle extends JFrame implements ActionListener {
     private final XAsteroidManager asteroidManager;
     private final XHealthManager healthManager;
     private final XWeaponManager weaponManager;
+    private final XHyperspaceManager hyperspaceManager;
     private final XTextWriter weaponWriter;
     private final XTextWriter pointsWriter;
     private final Timer updater;
@@ -50,6 +51,7 @@ class XSpaceBattle extends JFrame implements ActionListener {
         this.setVisible(true);
         Dimension size = this.context.getSize();
         this.specialEffects = new XSpecialEffects(size);
+        long currentTime = System.currentTimeMillis();
         this.player = new XPlayer(
                 size,
                 this.input,
@@ -58,9 +60,9 @@ class XSpaceBattle extends JFrame implements ActionListener {
                 () -> {
                     Timer resuscitator = new Timer(DEATH_HANDLER_DELAY, this);
                     resuscitator.setActionCommand("revive");
-                    resuscitator.setRepeats(false);
                     resuscitator.start();
-                }
+                },
+                currentTime
         );
         this.asteroidManager = new XAsteroidManager(size, this.player, this.specialEffects);
         this.healthManager = new XHealthManager(
@@ -71,10 +73,18 @@ class XSpaceBattle extends JFrame implements ActionListener {
                 this.asteroidManager,
                 this.healthManager,
                 this.input,
-                this.player);
+                this.player,
+                this.specialEffects);
+        this.hyperspaceManager = new XHyperspaceManager(
+                size,
+                this.input,
+                this.player,
+                this.asteroidManager,
+                this.specialEffects,
+                this.weaponManager,
+                currentTime);
         this.weaponWriter = new XTextWriter(size, TEXT_STYLE, WEAPON_COLOR);
         this.pointsWriter = new XTextWriter(size, TEXT_STYLE, POINTS_COLOR);
-        // Must invoke dispose later so that it does not happen in the middle of a XEngine update.
         this.updater = new Timer(1000 / FRAMES_PER_SECOND, this);
         this.updater.setActionCommand("update");
         this.updater.start();
@@ -93,30 +103,41 @@ class XSpaceBattle extends JFrame implements ActionListener {
         long currentTime = System.currentTimeMillis();
         switch (event.getActionCommand()) {
             case "update":
-                if (this.input.requestsExit())
-                    SwingUtilities.invokeLater(this::dispose);
+                this.checkInput(currentTime);
                 this.updatePhysics(currentTime);
                 this.updateGraphics(currentTime);
                 break;
             case "revive":
-                if (this.healthManager.canRevive()) {
-                    this.player.revive();
-                    this.healthManager.commitRevive();
-                } else
+                if (!this.healthManager.canRevive())
                     SwingUtilities.invokeLater(this::dispose);
+                else if (this.hyperspaceManager.initiateHyperspaceJump(currentTime)) {
+                    this.player.revive(currentTime);
+                    this.healthManager.commitRevive();
+                    ((Timer) event.getSource()).stop();
+                }
                 break;
             default:
                 throw new RuntimeException("action command was not recognized");
         }
     }
 
+    private void checkInput(long currentTime) {
+        this.hyperspaceManager.handlePanicRequest(currentTime);
+        if (this.input.requestsToggleEffects())
+            this.specialEffects.toggleEffects();
+        if (this.input.requestsExit())
+            SwingUtilities.invokeLater(this::dispose);
+    }
+
     private void updatePhysics(long currentTime) {
-        this.player.move();
+        this.player.move(currentTime);
         this.weaponManager.handleFireRequest(currentTime);
         this.asteroidManager.move(currentTime);
         this.weaponManager.move(currentTime);
         this.specialEffects.moveDebris();
         this.asteroidManager.ensureAsteroidAvailability();
+        // Support new effect types.
+        this.specialEffects.moveExplosions(currentTime);
     }
 
     private void updateGraphics(long currentTime) {
@@ -138,7 +159,7 @@ class XSpaceBattle extends JFrame implements ActionListener {
         this.weaponManager.drawProjectiles(surface, currentTime);
         this.specialEffects.drawExplosions(surface, currentTime);
         // Always draw the player last.
-        this.player.draw(surface);
+        this.player.draw(surface, currentTime);
     }
 
     private void drawHeadsUpDisplay(Graphics surface, long currentTime) {
