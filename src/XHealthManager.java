@@ -6,13 +6,13 @@ import java.util.stream.IntStream;
  * Created by Stephen "Zero" Chappell on 8 June 2016.
  */
 class XHealthManager {
-    private static int STARTING_LIFE_COUNT = 1;
-    private static int INDICATOR_MARGIN = 5;
-    private static int POINTS_FOR_EXTRA_LIFE = 25;
-    private static Color SHIP_HIGHLIGHT = XPlayer.SHIP_HIGHLIGHT.interpolate(0.5, XColor.BLACK).value();
-    private static Color SHIP_COLOR = XPlayer.SHIP_COLOR.interpolate(0.5, XColor.BLACK).value();
-    private Dimension size;
-    private BufferedImage buffer;
+    private static final int STARTING_LIFE_COUNT = 2;
+    private static final int INDICATOR_MARGIN = 5;
+    private static final int POINTS_FOR_EXTRA_LIFE = 50;
+    private static final Color SHIP_HIGHLIGHT = XPlayer.SHIP_HIGHLIGHT.interpolate(0.5, XColor.BLACK).value();
+    private static final Color SHIP_COLOR = XPlayer.SHIP_COLOR.interpolate(0.5, XColor.BLACK).value();
+    private final Dimension size;
+    private final BufferedImage buffer;
     private int livesRemaining;
     private int totalPoints;
 
@@ -23,8 +23,7 @@ class XHealthManager {
         this.buffer = new BufferedImage(
                 shape.getWidthInt() + (INDICATOR_MARGIN << 1),
                 shape.getHeightInt() + (INDICATOR_MARGIN << 1),
-                BufferedImage.TYPE_INT_ARGB
-        );
+                BufferedImage.TYPE_INT_ARGB);
         Graphics surface = this.buffer.getGraphics();
         shape.translate(new XVector(-shape.getMinX(), -shape.getMinY()).add(INDICATOR_MARGIN));
         shape.draw(surface, SHIP_HIGHLIGHT, SHIP_COLOR);
@@ -46,8 +45,7 @@ class XHealthManager {
                 this.buffer,
                 sizeWidth - bufferWidth * offset,
                 sizeHeight - bufferHeight,
-                null
-        ));
+                null));
     }
 
     int getScore() {

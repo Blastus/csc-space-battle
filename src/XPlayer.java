@@ -23,6 +23,9 @@ class XPlayer {
     private static final int MIN_REACTOR_PARTICLE_LENGTH = 2;
     private static final int MAX_REACTOR_PARTICLE_LENGTH = 5;
     private static final double REACTOR_PARTICLE_DEVIANCE = 0.5;
+    private static final int DEATH_EFFECT_SIZE = 100;
+    private static final int DEATH_PARTICLE_SIZE = 40;
+    private static final int DEATH_PARTICLE_COUNT = 40;
     private static final XPolygon SHAPE = new XPolygon(
             XVector.polar(0.1, XVector.CIRCLE_2_8),
             XVector.polar(RADIUS, XVector.CIRCLE_3_8),
@@ -33,13 +36,14 @@ class XPlayer {
     private final XInput input;
     private final XVector position;
     private final XThruster motor;
+    private final XSpecialEffects specialEffects;
     private final Runnable handleDeath;
     private XVector velocity;
     private double direction;
     private double dirSpeed;
     private boolean alive;
 
-    XPlayer(Dimension size, XInput input, XVector position, Runnable handleDeath) {
+    XPlayer(Dimension size, XInput input, XVector position, XSpecialEffects specialEffects, Runnable handleDeath) {
         this.size = size;
         this.input = input;
         this.position = position;
@@ -49,6 +53,7 @@ class XPlayer {
                 MIN_MOTOR_PARTICLE_LENGTH,
                 MAX_MOTOR_PARTICLE_LENGTH,
                 MOTOR_PARTICLE_DEVIANCE);
+        this.specialEffects = specialEffects;
         this.handleDeath = handleDeath;
         this.revive();
     }
@@ -144,8 +149,16 @@ class XPlayer {
         return this.alive;
     }
 
-    void kill() {
+    void kill(long currentTime) {
         this.alive = false;
+        this.specialEffects.spawn(
+                this.position,
+                DEATH_EFFECT_SIZE,
+                DEATH_PARTICLE_SIZE,
+                DEATH_PARTICLE_COUNT,
+                DEATH_LIFE_SPAN,
+                currentTime
+        );
         this.handleDeath.run();
     }
 

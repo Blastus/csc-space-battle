@@ -16,12 +16,14 @@ class XWeaponManager {
     };
     private static final int[] WEAPON_COOLING_TIMES = {
             XRotaryCannon.COOLING_TIME,
-            XGuidedMissile.COOLING_TIME
+            XGuidedMissile.COOLING_TIME,
+            XSpaceMine.COOLING_TIME
     };
     static final int SUPPORTED_WEAPONS = WEAPON_COOLING_TIMES.length;
     private static final String[] WEAPON_NAMES = {
             "Rotary Cannon",
-            "Guided Missile"
+            "Guided Missile",
+            "Space Mine"
     };
     private final Dimension size;
     private final XAsteroidManager asteroidManager;
@@ -32,11 +34,12 @@ class XWeaponManager {
     private final ArrayList<XWeapon> newWeapons;
     private long lastFireTime;
 
-    XWeaponManager(Dimension size,
-                   XAsteroidManager asteroidManager,
-                   XHealthManager healthManager,
-                   XInput input,
-                   XPlayer player
+    XWeaponManager(
+            Dimension size,
+            XAsteroidManager asteroidManager,
+            XHealthManager healthManager,
+            XInput input,
+            XPlayer player
     ) {
         this.size = size;
         this.asteroidManager = asteroidManager;
@@ -57,7 +60,7 @@ class XWeaponManager {
             if (hitAsteroids > 0) {
                 this.healthManager.addPoints(hitAsteroids);
                 // Destroying asteroids may also create asteroids, but this weapon cannot hit the new ones.
-                this.asteroidManager.destroy(asteroids);
+                this.asteroidManager.destroy(asteroids, currentTime);
                 return true;
             }
             return !weapon.isAlive(currentTime);
@@ -124,6 +127,10 @@ class XWeaponManager {
                             this.getProjectileVelocity(),
                             this.asteroidManager,
                             currentTime));
+                    break;
+                case 2:
+                    // Space Mine
+                    this.newWeapons.add(new XSpaceMine(this.player.getPosition().copy(), currentTime));
                     break;
                 default:
                     throw new RuntimeException("requested weapon case was not handled");

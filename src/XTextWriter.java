@@ -19,7 +19,7 @@ class XTextWriter {
         this.background = XColor.BLACK.interpolate(FOREGROUND_TO_BACKGROUND_BIAS, foreground).value();
     }
 
-    void write(Graphics surface, String text, String canvasAnchor, String stringAnchor, XVector offset) {
+    void write(Graphics surface, String text, XAnchor canvasAnchor, XAnchor stringAnchor, XVector offset) {
         double canvasWidth = this.size.getWidth();
         double canvasHeight = this.size.getHeight();
         XVector canvasAnchorPosition = this.getAnchorPosition(canvasAnchor, (int) canvasWidth, (int) canvasHeight);
@@ -36,26 +36,26 @@ class XTextWriter {
         surface.drawString(text, finalPosition.getIntX(), finalPosition.getIntY());
     }
 
-    private XVector getAnchorPosition(String anchor, int width, int height) {
+    private XVector getAnchorPosition(XAnchor anchor, int width, int height) {
         switch (anchor) {
-            case "CENTER":
+            case CENTER:
                 return new XVector(width >> 1, height >> 1);
-            case "NORTH":
+            case NORTH:
                 return new XVector(width >> 1, 0);
-            case "NORTH_EAST":
+            case NORTH_EAST:
                 return new XVector(width, 0);
-            case "EAST":
+            case EAST:
                 return new XVector(width, height >> 1);
-            case "SOUTH_EAST":
+            case SOUTH_EAST:
                 return new XVector(width, height);
-            case "SOUTH":
+            case SOUTH:
                 return new XVector(width >> 1, height);
-            case "SOUTH_WEST":
+            case SOUTH_WEST:
                 return new XVector(0, height);
-            case "WEST":
+            case WEST:
                 return new XVector(0, height >> 1);
-            case "NORTH_WEST":
-                return new XVector();
+            case NORTH_WEST:
+                return new XVector(0, 0);
             default:
                 throw new RuntimeException("anchor case was not handled");
         }
