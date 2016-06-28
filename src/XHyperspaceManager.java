@@ -5,17 +5,17 @@ import java.util.stream.IntStream;
  * Created by Stephen "Zero" Chappell on 9 June 2016.
  */
 class XHyperspaceManager {
-    static int LIVING_LIFE_SPAN = 1500;
-    private static long HYPERSPACE_RESET = 5000;
-    private static int PATIENCE = 50;
-    private static int SAFETY_FACTOR = 3;
-    private static int LIVING_EFFECT_SIZE = 25;
-    private static int LIVING_PARTICLE_SIZE = 15;
-    private static int LIVING_PARTICLE_COUNT = 35;
-    private static int DEAD_EFFECT_SIZE = 35;
-    private static int DEAD_PARTICLE_SIZE = 15;
-    private static int DEAD_PARTICLE_COUNT = 60;
-    private static int DEAD_LIFE_SPAN = 3000;
+    static final int LIVING_LIFE_SPAN = 1500;
+    private static final long HYPERSPACE_RESET = 5000;
+    private static final int PATIENCE = 50;
+    private static final int SAFETY_FACTOR = 3;
+    private static final int LIVING_EFFECT_SIZE = 25;
+    private static final int LIVING_PARTICLE_SIZE = 15;
+    private static final int LIVING_PARTICLE_COUNT = 35;
+    private static final int DEAD_EFFECT_SIZE = 35;
+    private static final int DEAD_PARTICLE_SIZE = 15;
+    private static final int DEAD_PARTICLE_COUNT = 60;
+    private static final int DEAD_LIFE_SPAN = 3000;
     private final Dimension size;
     private final XInput input;
     private final XPlayer player;
@@ -50,19 +50,19 @@ class XHyperspaceManager {
         return this.hyperspaceTimer <= currentTime;
     }
 
-    void handlePanicRequest(long currentTime) {
+    void handlePanicRequest(boolean cheating, long currentTime) {
         if (this.input.requestsPanic() && this.available(currentTime) && this.player.isAlive()) {
             this.hyperspaceTimer = currentTime + HYPERSPACE_RESET;
-            this.initiateHyperspaceJump(currentTime);
+            this.initiateHyperspaceJump(cheating, currentTime);
         }
     }
 
-    boolean initiateHyperspaceJump(long currentTime) {
+    boolean initiateHyperspaceJump(boolean cheating, long currentTime) {
         XVector position = new XVector();
         try {
             IntStream.range(0, PATIENCE).forEach(a -> {
                 position.random(this.size);
-                if (!this.asteroidManager.getAsteroids().stream().anyMatch(asteroid -> position.sub(
+                if (cheating || !this.asteroidManager.getAsteroids().stream().anyMatch(asteroid -> position.sub(
                         asteroid.getPosition()).getMagnitude() / SAFETY_FACTOR <
                         asteroid.getRadius() + XPlayer.RADIUS))
                     throw new XFoundEvent();

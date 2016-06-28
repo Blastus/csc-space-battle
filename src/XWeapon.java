@@ -9,8 +9,12 @@ class XWeapon extends XCircle {
     private final int lifeSpan;
     private final long bornTime;
 
-    XWeapon(XVector position, int diameter, long currentTime) {
+    XWeapon(XVector position, long currentTime) {
         // A generic weapon will destroy an asteroid it overlaps, will not exist after moving, and will never be drawn.
+        this(position, 0, currentTime);
+    }
+
+    XWeapon(XVector position, int diameter, long currentTime) {
         this(position, new XVector(), diameter, -1, currentTime);
     }
 

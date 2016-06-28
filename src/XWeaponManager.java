@@ -22,14 +22,16 @@ class XWeaponManager {
             XRotaryCannon.COOLING_TIME,
             XGuidedMissile.COOLING_TIME,
             XSpaceMine.COOLING_TIME,
-            XClusterCrack.COOLING_TIME
+            XClusterCrack.COOLING_TIME,
+            XTeslaStrike.COOLING_TIME
     };
     static final int SUPPORTED_WEAPONS = WEAPON_COOLING_TIMES.length;
     private static final String[] WEAPON_NAMES = {
             "Rotary Cannon",
             "Guided Missile",
             "Space Mine",
-            "Cluster Crack"
+            "Cluster Crack",
+            "Tesla Strike"
     };
     private static final int HYPERSPACE_STORM_SIZE = 50;
     private final Dimension size;
@@ -40,6 +42,7 @@ class XWeaponManager {
     private final XSpecialEffects specialEffects;
     private final ArrayList<XWeapon> weapons;
     private final ArrayList<XWeapon> newWeapons;
+    private XTeslaStrike teslaStrike;
     private long lastFireTime;
 
     XWeaponManager(
@@ -48,20 +51,26 @@ class XWeaponManager {
             XHealthManager healthManager,
             XInput input,
             XPlayer player,
-            XSpecialEffects specialEffects
-    ) {
+            XSpecialEffects specialEffects) {
         this.size = size;
         this.asteroidManager = asteroidManager;
         this.healthManager = healthManager;
         this.input = input;
         this.player = player;
         this.specialEffects = specialEffects;
+        this.teslaStrike = null;
         this.weapons = new ArrayList<>();
         this.lastFireTime = 0;
         this.newWeapons = new ArrayList<>();
     }
 
     void move(long currentTime) {
+        // Move the tesla strike if it exists.
+        if (this.teslaStrike != null) {
+            this.teslaStrike.move(this.size, currentTime);
+            if (!this.teslaStrike.isAlive())
+                this.teslaStrike = null;
+        }
         // Move all live ammunition and collide with asteroids.
         this.weapons.removeIf(weapon -> {
             weapon.move(this.size);
@@ -85,6 +94,11 @@ class XWeaponManager {
 
     void drawProjectiles(Graphics surface, long currentTime) {
         this.weapons.stream().forEach(weapon -> weapon.draw(surface, currentTime));
+    }
+
+    void drawLightning(Graphics surface) {
+        if (this.teslaStrike != null)
+            this.teslaStrike.draw(surface);
     }
 
     void drawStatus(Graphics surface, XVector offset, long currentTime) {
@@ -113,6 +127,11 @@ class XWeaponManager {
                     STATUS_HEIGHT,
                     STATUS_HEIGHT);
         }
+    }
+
+    void requestLightningHit(XVector position, long currentTime) {
+        // A generic weapon will exist for less than one frame and can destroy an asteroid.
+        this.weapons.add(new XWeapon(position, currentTime));
     }
 
     void handleFireRequest(long currentTime) {
@@ -145,6 +164,10 @@ class XWeaponManager {
                 case 3:
                     // Cluster Crack
                     this.newWeapons.addAll(XClusterCrack.fire(this.player, currentTime));
+                    break;
+                case 4:
+                    // Tesla Strike
+                    this.teslaStrike = new XTeslaStrike(this.player, this.asteroidManager, this, currentTime);
                     break;
                 default:
                     throw new RuntimeException("requested weapon case was not handled");

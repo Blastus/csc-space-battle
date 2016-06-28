@@ -21,13 +21,19 @@ class XTimothyExplosion {
     private static final int SECONDARY_EXPLOSION_STOP_DIAMETER = 0;
     private static final int SECONDARY_EXPLOSION_LIFE_SPAN = 500;
     private final XVector position;
+    private final XVector velocity;
     private final int emitterLifeSpan;
     private final ArrayList<XTimothyLight> primaryLights;
     private final ArrayList<XTimothyLight> secondaryLights;
     private final long bornTime;
 
     XTimothyExplosion(XVector position, int emitterLifeSpan, long currentTime) {
+        this(position, new XVector(), emitterLifeSpan, currentTime);
+    }
+
+    XTimothyExplosion(XVector position, XVector velocity, int emitterLifeSpan, long currentTime) {
         this.position = position;
+        this.velocity = velocity;
         this.emitterLifeSpan = emitterLifeSpan;
         this.primaryLights = new ArrayList<>();
         this.secondaryLights = new ArrayList<>();
@@ -38,6 +44,7 @@ class XTimothyExplosion {
         this.secondaryLights.forEach(XTimothyLight::move);
         if (currentTime - this.bornTime < this.emitterLifeSpan) {
             this.emitLights(currentTime);
+            this.position.ipAdd(this.velocity);
         }
     }
 

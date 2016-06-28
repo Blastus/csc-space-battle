@@ -5,8 +5,11 @@ import java.awt.event.KeyListener;
  * Created by Stephen "Zero" Chappell on 27 May 2016.
  */
 class XInput implements KeyListener {
+    private static final String CHEAT_STRING = "cheat";
     private int weaponOffset;
+    private String cheatBuffer;
     // Request Flags
+    private boolean requestCheat;
     private boolean requestPanic;
     private boolean requestToggleEffects;
     private boolean requestExit;
@@ -19,6 +22,8 @@ class XInput implements KeyListener {
 
     XInput() {
         this.weaponOffset = 0;
+        this.cheatBuffer = "";
+        this.requestCheat = false;
         this.requestPanic = false;
         this.requestToggleEffects = false;
         this.requestExit = false;
@@ -45,6 +50,18 @@ class XInput implements KeyListener {
                         XWeaponManager.SUPPORTED_WEAPONS) - 1;
                 break;
             // Handle changing request flags.
+            case KeyEvent.VK_C:
+            case KeyEvent.VK_H:
+            case KeyEvent.VK_E:
+            case KeyEvent.VK_A:
+            case KeyEvent.VK_T:
+                this.cheatBuffer += event.getKeyChar();
+                int difference = this.cheatBuffer.length() - CHEAT_STRING.length();
+                if (difference > 0)
+                    this.cheatBuffer = this.cheatBuffer.substring(difference);
+                if (this.cheatBuffer.equalsIgnoreCase(CHEAT_STRING))
+                    this.requestCheat = true;
+                break;
             case KeyEvent.VK_P:
                 this.requestPanic = true;
                 break;
@@ -99,6 +116,12 @@ class XInput implements KeyListener {
 
     int requestsWeapon() {
         return this.weaponOffset;
+    }
+
+    boolean requestsCheat() {
+        boolean cheat = this.requestCheat;
+        this.requestCheat = false;
+        return cheat;
     }
 
     boolean requestsPanic() {

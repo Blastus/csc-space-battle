@@ -28,8 +28,19 @@ class XPolygon {
         Arrays.stream(this.points).forEach(point -> point.addDirection(direction));
     }
 
+    void scale(double magnitude) {
+        Arrays.stream(this.points).forEach(point -> point.ipMul(magnitude));
+    }
+
     void translate(XVector position) {
         Arrays.stream(this.points).forEach(point -> point.ipAdd(position));
+    }
+
+    Polygon value() {
+        return new Polygon(
+                Arrays.stream(this.points).mapToInt(XVector::getIntX).toArray(),
+                Arrays.stream(this.points).mapToInt(XVector::getIntY).toArray(),
+                this.points.length);
     }
 
     double getMinX() {
@@ -81,10 +92,7 @@ class XPolygon {
     }
 
     void draw(Graphics surface, Color outline, Color fill) {
-        Polygon shape = new Polygon(
-                Arrays.stream(this.points).mapToInt(XVector::getIntX).toArray(),
-                Arrays.stream(this.points).mapToInt(XVector::getIntY).toArray(),
-                this.points.length);
+        Polygon shape = this.value();
         if (fill != null) {
             surface.setColor(fill);
             surface.fillPolygon(shape);

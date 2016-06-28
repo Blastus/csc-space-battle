@@ -37,6 +37,10 @@ class XCircle {
         return this.radius;
     }
 
+    boolean contains(XCircle other) {
+        return this.contains(other, 0);
+    }
+
     boolean contains(XCircle other, int margin) {
         return this.position.sub(other.position).getMagnitude() + other.radius <= this.radius - margin;
     }
@@ -49,7 +53,7 @@ class XCircle {
         return this.position.sub(other.position).getMagnitude() * distanceScale < this.radius + other.radius;
     }
 
-    private double getMarginalDistance(XCircle other) {
+    double getMarginalDistance(XCircle other) {
         return this.position.sub(other.position).getMagnitude() - this.radius - other.radius;
     }
 }
