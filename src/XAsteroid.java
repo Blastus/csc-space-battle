@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
  * Created by Stephen "Zero" Chappell on 3 June 2016.
  */
 class XAsteroid {
+    static final int NEUTRAL_TAG = -1;
     private static final XColor DARK_GRAY = new XColor(30, 30, 30);
     private static final XColor LIGHT_GRAY = new XColor(110, 110, 110);
     private static final int DESIRED_CRATER_COUNT = 5;
@@ -18,10 +19,12 @@ class XAsteroid {
     private final XCircle shape;
     private final XVector velocity;
     private final BufferedImage buffer;
+    private int tag;
 
     XAsteroid(XCircle shape, XVector velocity) {
         this.shape = shape;
         this.velocity = velocity;
+        this.tag = 0;
         this.buffer = new BufferedImage(
                 this.shape.getDiameter(),
                 this.shape.getDiameter(),
@@ -78,6 +81,20 @@ class XAsteroid {
 
     XVector getPosition() {
         return this.shape.getPosition();
+    }
+
+    int getTag() {
+        return this.tag;
+    }
+
+    void setTag(int tag) {
+        if (tag == NEUTRAL_TAG)
+            throw new RuntimeException("tag may not be neutral");
+        this.tag = tag;
+    }
+
+    void copyTag(XAsteroid other) {
+        this.tag = other.tag;
     }
 
     int getRadius() {

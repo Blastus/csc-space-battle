@@ -25,7 +25,7 @@ class XColor {
         this.blue = blue;
     }
 
-    private XColor(double red, double green, double blue) {
+    XColor(double red, double green, double blue) {
         this(XColor.clamp(red), XColor.clamp(green), XColor.clamp(blue));
     }
 

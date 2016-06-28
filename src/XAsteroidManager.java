@@ -52,7 +52,7 @@ class XAsteroidManager {
         this.currentAsteroidCount += this.asteroidCountIncrement;
     }
 
-    void move(long currentTime) {
+    void move(boolean cheating, long currentTime) {
         XCircle playerShape = this.player.isAlive() ?
                 new XCircle(this.player.getPosition(), XPlayer.RADIUS << 1) :
                 null;
@@ -61,8 +61,9 @@ class XAsteroidManager {
             return playerShape != null && asteroid.getShape().overlaps(playerShape);
         }).collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
         if (collisions.size() > 0) {
-            this.player.kill(currentTime);
-            this.destroy(collisions, currentTime);
+            if (!cheating)
+                this.player.kill(currentTime);
+            this.destroy(collisions, cheating, currentTime);
         }
     }
 
@@ -71,13 +72,19 @@ class XAsteroidManager {
     }
 
     XAsteroid findClosest(XVector position) {
+        return this.findClosest(position, XAsteroid.NEUTRAL_TAG, Double.POSITIVE_INFINITY);
+    }
+
+    XAsteroid findClosest(XVector position, int avoidTag, double maxDistance) {
         XAsteroid match = null;
-        double distance = Double.POSITIVE_INFINITY;
+        double distance = maxDistance;
         for (XAsteroid asteroid : this.asteroids) {
-            double difference = position.sub(asteroid.getPosition()).getMagnitude() - asteroid.getRadius();
-            if (difference < distance) {
-                match = asteroid;
-                distance = difference;
+            if (asteroid.getTag() != avoidTag) {
+                double difference = position.sub(asteroid.getPosition()).getMagnitude() - asteroid.getRadius();
+                if (difference < distance) {
+                    match = asteroid;
+                    distance = difference;
+                }
             }
         }
         return match;
@@ -89,18 +96,24 @@ class XAsteroidManager {
                 .collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
     }
 
-    void destroy(ArrayList<XAsteroid> deadAsteroids, long currentTime) {
+    void destroy(ArrayList<XAsteroid> asteroids, long currentTime) {
+        this.destroy(asteroids, true, currentTime);
+    }
+
+    private void destroy(ArrayList<XAsteroid> deadAsteroids, boolean createAsteroidExplosions, long currentTime) {
         deadAsteroids.forEach(asteroid -> {
-            int diameter = asteroid.getDiameter();
-            int radius = asteroid.getRadius();
-            this.specialEffects.spawn(
-                    asteroid.getPosition(),
-                    diameter,
-                    radius,
-                    radius,
-                    diameter * TIME_MULTIPLIER + ADDITIONAL_TIME,
-                    XSpecialEffects.WARM,
-                    currentTime);
+            if (createAsteroidExplosions) {
+                int diameter = asteroid.getDiameter();
+                int radius = asteroid.getRadius();
+                this.specialEffects.spawn(
+                        asteroid.getPosition(),
+                        diameter,
+                        radius,
+                        radius,
+                        diameter * TIME_MULTIPLIER + ADDITIONAL_TIME,
+                        XSpecialEffects.WARM,
+                        currentTime);
+            }
             // Create debris from the destruction.
             this.specialEffects.spawn(asteroid, currentTime);
             this.createFragments(asteroid);
@@ -115,7 +128,11 @@ class XAsteroidManager {
                 XVector velocity = XVector.polar(
                         asteroid.getVelocity().getMagnitude() * speedMultiplier,
                         XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8));
-                this.asteroids.add(new XAsteroid(new XCircle(position, asteroid.getRadius()), velocity));
+                XAsteroid newAsteroid = new XAsteroid(new XCircle(position, asteroid.getRadius()), velocity);
+                if (XSpaceBattle.CHAOS.random() > XTeslaStrike.FRAGMENT_HIT_CHANCE)
+                    // Asteroids may not be hit by a tesla strike if they have the same tag as the tesla strike.
+                    newAsteroid.copyTag(asteroid);
+                this.asteroids.add(newAsteroid);
             });
         }
     }

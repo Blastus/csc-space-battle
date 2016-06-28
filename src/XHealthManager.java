@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 class XHealthManager {
     private static final int STARTING_LIFE_COUNT = 3;
     private static final int INDICATOR_MARGIN = 5;
-    private static final int POINTS_FOR_EXTRA_LIFE = 75;
+    private static final int POINTS_FOR_EXTRA_LIFE = 100;
     private static final Color SHIP_HIGHLIGHT = XPlayer.SHIP_HIGHLIGHT.interpolate(0.5, XColor.BLACK).value();
     private static final Color SHIP_COLOR = XPlayer.SHIP_COLOR.interpolate(0.5, XColor.BLACK).value();
     private final Dimension size;

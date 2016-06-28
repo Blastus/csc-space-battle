@@ -147,6 +147,13 @@ class XPlayer {
         }
     }
 
+    XVector getNosePosition() {
+        XVector nose = SHAPE.getPoint(2).copy();
+        nose.addDirection(XVector.CIRCLE_4_8 - this.direction);
+        nose.ipAdd(this.position);
+        return nose;
+    }
+
     double getDirection() {
         return this.direction;
     }

@@ -17,12 +17,18 @@ class XTimothyHyperspace {
     private static final int LIFE_SPAN = 400;
     private static final double DIRECTION_CHANGE_PER_FRAME = XVector.CIRCLE_2_8 / 5;
     private final XVector position;
+    private final XVector velocity;
     private final int emitterLifeSpan;
     private final ArrayList<XTimothyLight> lights;
     private final long bornTime;
 
     XTimothyHyperspace(XVector position, int emitterLifeSpan, long currentTime) {
+        this(position, new XVector(), emitterLifeSpan, currentTime);
+    }
+
+    XTimothyHyperspace(XVector position, XVector velocity, int emitterLifeSpan, long currentTime) {
         this.position = position;
+        this.velocity = velocity;
         this.emitterLifeSpan = emitterLifeSpan;
         this.lights = new ArrayList<>();
         this.bornTime = currentTime;
@@ -31,6 +37,7 @@ class XTimothyHyperspace {
     void move(long currentTime) {
         if (currentTime - this.bornTime < this.emitterLifeSpan) {
             this.emitLights(currentTime);
+            this.position.ipAdd(this.velocity);
         }
         this.lights.forEach(XTimothyLight::move);
     }

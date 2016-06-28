@@ -4,15 +4,15 @@ import java.util.Random;
  * Created by Stephen "Zero" Chappell on 6 June 2016.
  */
 class XRandom extends Random {
-    private int randomRange(int stop) {
+    int randomRange(int stop) {
         return this.randomRange(0, stop);
     }
 
-    private int randomRange(int start, int stop) {
+    int randomRange(int start, int stop) {
         return this.randomRange(start, stop, 1);
     }
 
-    private int randomRange(int start, int stop, int step) {
+    int randomRange(int start, int stop, int step) {
         int width = stop - start;
         if (step == 1 && width > 0)
             return start + this.randomBelow(width);

@@ -13,10 +13,14 @@ class XTextWriter {
     private final Color background;
 
     XTextWriter(Dimension size, Font typeface, XColor foreground) {
+        this(size, typeface, foreground, XColor.BLACK.interpolate(FOREGROUND_TO_BACKGROUND_BIAS, foreground));
+    }
+
+    XTextWriter(Dimension size, Font typeface, XColor foreground, XColor background) {
         this.size = size;
         this.typeface = typeface;
         this.foreground = foreground.value();
-        this.background = XColor.BLACK.interpolate(FOREGROUND_TO_BACKGROUND_BIAS, foreground).value();
+        this.background = background.value();
     }
 
     void write(Graphics surface, String text, XAnchor canvasAnchor, XAnchor stringAnchor, XVector offset) {
