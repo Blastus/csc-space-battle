@@ -65,6 +65,7 @@ class XHyperspaceManager {
                 if (cheating || !this.asteroidManager.getAsteroids().stream().anyMatch(asteroid -> position.sub(
                         asteroid.getPosition()).getMagnitude() / SAFETY_FACTOR <
                         asteroid.getRadius() + XPlayer.RADIUS))
+                    // TODO this class may be removed if proper streaming techniques are used
                     throw new XFoundEvent();
             });
             // A safe position was not found.

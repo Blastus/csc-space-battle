@@ -53,10 +53,12 @@ class XEngine implements ActionListener {
                 currentTime);
         this.enableCheating = false;
         this.starField = new XStarField(size);
+        // TODO the following arguments will fit on one line
         this.asteroidManager = new XAsteroidManager(
                 size,
                 this.player,
                 this.specialEffects);
+        // TODO the following arguments will fit on one line
         this.healthManager = new XHealthManager(
                 size,
                 XPlayer.getShape(XVector.CIRCLE_2_8));

@@ -3,6 +3,7 @@ import java.util.Random;
 /*
  * Created by Stephen "Zero" Chappell on 6 June 2016.
  */
+// TODO class should be given an optional static interface via a singleton
 class XRandom extends Random {
     int randomRange(int stop) {
         return this.randomRange(0, stop);
@@ -29,6 +30,7 @@ class XRandom extends Random {
     }
 
     private int randomBelow(int number) {
+        // TODO change condition to (number <= 1)
         if (number == 0)
             return 0;
         int bits = 32 - Integer.numberOfLeadingZeros(number);
@@ -52,10 +54,12 @@ class XRandom extends Random {
     }
 
     double uniform(double a) {
+        // TODO the first argument can be changed from 0.0 to 0
         return this.uniform(0.0, a);
     }
 
     double uniform(double a, double b) {
+        // TODO should be implemented with "c = r(); d = 1 - c; return a * d + b * c" pattern
         return a + (b - a) * this.random();
     }
 }

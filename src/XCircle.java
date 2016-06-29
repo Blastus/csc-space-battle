@@ -37,10 +37,12 @@ class XCircle {
         return this.radius;
     }
 
+    // TODO contains should accept an XVector if it is not interested in a margin
     boolean contains(XCircle other) {
         return this.contains(other, 0);
     }
 
+    // TODO based on usage, margin should come from other.radius
     boolean contains(XCircle other, int margin) {
         return this.position.sub(other.position).getMagnitude() + other.radius <= this.radius - margin;
     }

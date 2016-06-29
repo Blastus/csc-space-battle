@@ -99,6 +99,7 @@ class XVector {
         this.y = other.y;
     }
 
+    // TODO change (double other) to be (double value) in all cases
     XVector add(double other) {
         return new XVector(this.x + other, this.y + other);
     }

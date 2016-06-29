@@ -21,6 +21,7 @@ class XAsteroidManager {
             2.0
     };
     private final Dimension size;
+    // TODO replace asteroidCountIncrement with ASTEROID_COUNT_INCREMENT
     private final int asteroidCountIncrement;
     private final XPlayer player;
     private final XSpecialEffects specialEffects;
@@ -38,6 +39,7 @@ class XAsteroidManager {
     }
 
     private void spawn() {
+        // TODO rename position to be asteroidPosition
         XVector position = new XVector();
         int safetyMargin = ((STARTING_ASTEROID_DIAMETER >> 1) + XPlayer.RADIUS) * SAFETY_SCALE;
         XVector playerPosition = this.player.getPosition();
@@ -45,6 +47,7 @@ class XAsteroidManager {
             do {
                 position.random(this.size);
             } while (position.sub(playerPosition).getMagnitude() < safetyMargin);
+            // TODO create asteroid so that it knows this.size
             this.asteroids.add(new XAsteroid(
                     new XCircle(position.copy(), STARTING_ASTEROID_DIAMETER),
                     XVector.polar(STARTING_ASTEROID_SPEED, XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8))));
@@ -68,6 +71,7 @@ class XAsteroidManager {
     }
 
     void draw(Graphics surface) {
+        // TODO drop .stream() since it is not needed
         this.asteroids.stream().forEach(asteroid -> asteroid.draw(surface));
     }
 

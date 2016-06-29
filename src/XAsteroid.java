@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 /*
  * Created by Stephen "Zero" Chappell on 3 June 2016.
  */
+// TODO extend XCircle and refactor to use its functionality
 class XAsteroid {
     static final int NEUTRAL_TAG = -1;
     private static final XColor DARK_GRAY = new XColor(30, 30, 30);
@@ -21,6 +22,7 @@ class XAsteroid {
     private final BufferedImage buffer;
     private int tag;
 
+    // TODO store Dimension size in the asteroid
     XAsteroid(XCircle shape, XVector velocity) {
         this.shape = shape;
         this.velocity = velocity;
@@ -31,6 +33,7 @@ class XAsteroid {
                 BufferedImage.TYPE_INT_ARGB);
         Graphics surface = this.buffer.getGraphics();
         // Draw the background.
+        // TODO redesign loop to use IntStream instead
         for (int size = this.shape.getDiameter(); size > 0; size -= 3) {
             surface.setColor(LIGHT_GRAY.interpolate(1.0 * size / this.shape.getDiameter(), DARK_GRAY).value());
             surface.fillOval(this.shape.getDiameter() - size >> 2, this.shape.getDiameter() - size >> 2, size, size);
@@ -55,6 +58,7 @@ class XAsteroid {
                             !craters.stream().anyMatch(crater -> craterDescription.overlaps(
                                     crater,
                                     CRATER_DISTANCE_SCALE)))
+                        // TODO this class may be removed if proper streaming techniques are used
                         throw new XFoundEvent();
                 });
             } catch (XFoundEvent event) {
@@ -71,6 +75,7 @@ class XAsteroid {
     void move(Dimension size) {
         XVector position = this.shape.getPosition();
         position.ipAdd(this.velocity);
+        // TODO use this.size instead
         position.clampXY(size);
     }
 
