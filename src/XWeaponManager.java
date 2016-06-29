@@ -93,6 +93,7 @@ class XWeaponManager {
     }
 
     void drawProjectiles(Graphics surface, long currentTime) {
+        // TODO drop .stream() since it is not needed
         this.weapons.stream().forEach(weapon -> weapon.draw(surface, currentTime));
     }
 

@@ -37,6 +37,7 @@ class XHealthManager {
     }
 
     void draw(Graphics surface) {
+        // TODO +X should be shown when this.livesRemaining exceeds some limit
         int sizeWidth = (int) this.size.getWidth();
         int sizeHeight = (int) this.size.getHeight();
         int bufferWidth = this.buffer.getWidth();

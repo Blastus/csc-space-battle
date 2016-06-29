@@ -3,6 +3,7 @@ import java.awt.*;
 /*
  * Created by Stephen "Zero" Chappell on 2 June 2016.
  */
+// TODO extend XCircle and refactor to use its functionality
 class XPlayer {
     static final int DEATH_LIFE_SPAN = 2000;
     static final int RADIUS = 14;
@@ -44,6 +45,7 @@ class XPlayer {
     private boolean alive;
     private XHyperspaceManager hyperspaceManager;
 
+    // TODO constructor does not need to receive currentTime
     XPlayer(
             Dimension size,
             XInput input,
@@ -78,6 +80,7 @@ class XPlayer {
                 this.velocity.ipMul(SLOW_MULTIPLIER);
                 this.dirSpeed *= SLOW_MULTIPLIER;
             }
+            // TODO the following two checks may be joined together
             if (this.hyperspaceManager.available(currentTime)) {
                 if (this.input.requestsBurn()) {
                     this.velocity.ipAdd(XVector.polar(BURN_IMPULSE, XVector.CIRCLE_2_8 - this.direction));

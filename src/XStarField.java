@@ -26,6 +26,7 @@ class XStarField {
                     position.random(size);
                     if (!this.positions.stream().anyMatch(point -> position.sub(point).getMagnitude() <
                             MIN_STAR_MARGIN))
+                        // TODO this class may be removed if proper streaming techniques are used
                         throw new XFoundEvent();
                 });
             } catch (XFoundEvent event) {

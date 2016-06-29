@@ -21,6 +21,7 @@ class XSpaceMine extends XWeapon {
         super.draw(surface, currentTime);
         int offset = (int) (currentTime / INDICATOR_TIME_SLICE % INDICATOR.length);
         surface.setColor(INDICATOR[offset]);
+        // TODO create and use new variables called indicatorDiameter and indicatorRadius
         int halfRadius = this.radius >> 1;
         surface.fillOval(
                 this.position.getIntX() - halfRadius,

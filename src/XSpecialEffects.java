@@ -64,6 +64,7 @@ class XSpecialEffects {
     }
 
     void moveExplosions(long currentTime) {
+        // TODO have timothyHyperspaces before timothyExplosions wherever they are used
         this.timothyExplosions.forEach(explosion -> explosion.move(currentTime));
         this.timothyHyperspaces.forEach(explosion -> explosion.move(currentTime));
     }

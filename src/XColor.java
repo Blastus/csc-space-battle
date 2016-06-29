@@ -3,6 +3,7 @@ import java.awt.*;
 /*
  * Created by Stephen "Zero" Chappell on 27 May 2016.
  */
+// TODO class should extend Color and be refactored accordingly
 class XColor {
     static final XColor BLACK = new XColor(0, 0, 0);
     static final XColor DARK_GRAY = new XColor(64, 64, 64);

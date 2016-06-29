@@ -35,6 +35,7 @@ class XExplosion {
     }
 
     boolean draw(Graphics surface, long currentTime) {
+        // TODO a ratio should be calculated here
         if (currentTime - this.bornTime > this.lifeSpan)
             // Signal the caller to remove the explosion.
             return true;
@@ -58,6 +59,7 @@ class XExplosion {
         return false;
     }
 
+    // TODO this method should accept a ratio instead of calculating it
     private double getScale(long currentTime) {
         double ratio = 1.0 * (currentTime - this.bornTime) / this.lifeSpan;
         return ratio < MIDDLE_BIAS ?

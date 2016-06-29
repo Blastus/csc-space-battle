@@ -4,6 +4,7 @@ import java.awt.*;
  * Created by Stephen "Zero" Chappell on 3 June 2016.
  */
 class XCrater extends XCircle {
+    // TODO DARK_AREA and LIGHT_AREA need to have their names swapped in all places
     private static final Color DARK_AREA = XColor.GRAY.value();
     private static final Color LIGHT_AREA = XColor.BLACK.interpolate(0.75, XColor.DARK_GRAY).value();
     private static final double NORTH_WEST_RESIZE = 1.0;
