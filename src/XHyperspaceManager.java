@@ -31,7 +31,8 @@ class XHyperspaceManager {
             XAsteroidManager asteroidManager,
             XSpecialEffects specialEffects,
             XWeaponManager weaponManager,
-            long currentTime) {
+            long currentTime
+    ) {
         this.size = size;
         this.input = input;
         this.player = player;
@@ -58,25 +59,26 @@ class XHyperspaceManager {
     }
 
     boolean initiateHyperspaceJump(boolean cheating, long currentTime) {
-        XVector position = new XVector();
-        try {
-            IntStream.range(0, PATIENCE).forEach(a -> {
-                position.random(this.size);
-                if (cheating || !this.asteroidManager.getAsteroids().stream().anyMatch(asteroid -> position.sub(
-                        asteroid.getPosition()).getMagnitude() / SAFETY_FACTOR <
-                        asteroid.getRadius() + XPlayer.RADIUS))
-                    // TODO this class may be removed if proper streaming techniques are used
-                    throw new XFoundEvent();
-            });
-            // A safe position was not found.
-            this.weaponManager.initiateHyperspaceStorm(currentTime);
-            return false;
-        } catch (XFoundEvent event) {
-            // Jump to the safe position.
-            boolean playerIsAlive = this.player.isAlive();
-            XVector playerPosition = player.getPosition();
-            if (playerIsAlive)
+        XVector playerPosition = this.player.getPosition();
+        XVector backupPosition = playerPosition.copy();
+        if (IntStream.range(0, PATIENCE).filter(a -> {
+            playerPosition.random(this.size);
+            return cheating || !this.asteroidManager.getAsteroids().stream().anyMatch(
+                    asteroid -> asteroid.overlaps(this.player, SAFETY_FACTOR)
+            );
+        }).findFirst().isPresent()) {
+            if (this.player.isAlive()) {
                 // Spawn a special effect at the starting point.
+                this.specialEffects.spawn(
+                        backupPosition,
+                        LIVING_EFFECT_SIZE,
+                        LIVING_PARTICLE_SIZE,
+                        LIVING_PARTICLE_COUNT,
+                        LIVING_LIFE_SPAN,
+                        XSpecialEffects.COOL,
+                        currentTime
+                );
+                // Spawn a special effect at the ending point.
                 this.specialEffects.spawn(
                         playerPosition.copy(),
                         LIVING_EFFECT_SIZE,
@@ -84,29 +86,24 @@ class XHyperspaceManager {
                         LIVING_PARTICLE_COUNT,
                         LIVING_LIFE_SPAN,
                         XSpecialEffects.COOL,
-                        currentTime);
-            playerPosition.copy(position);
-            if (playerIsAlive)
-                // Spawn a special effect at the ending point.
-                this.specialEffects.spawn(
-                        position,
-                        LIVING_EFFECT_SIZE,
-                        LIVING_PARTICLE_SIZE,
-                        LIVING_PARTICLE_COUNT,
-                        LIVING_LIFE_SPAN,
-                        XSpecialEffects.COOL,
-                        currentTime);
-            else
+                        currentTime
+                );
+            } else
                 // Spawn a special effect for the initial warp into the asteroid field.
                 this.specialEffects.spawn(
-                        position,
+                        playerPosition.copy(),
                         DEAD_EFFECT_SIZE,
                         DEAD_PARTICLE_SIZE,
                         DEAD_PARTICLE_COUNT,
                         DEAD_LIFE_SPAN,
                         XSpecialEffects.COOL,
-                        currentTime);
+                        currentTime
+                );
             return true;
         }
+        // Restore the old position.
+        playerPosition.copy(backupPosition);
+        this.weaponManager.initiateHyperspaceStorm(currentTime);
+        return false;
     }
 }

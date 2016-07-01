@@ -44,29 +44,29 @@ class XTimothyExplosion {
         this.secondaryLights.forEach(XTimothyLight::move);
         if (currentTime - this.bornTime < this.emitterLifeSpan) {
             this.emitLights(currentTime);
-            this.position.ipAdd(this.velocity);
+            this.position.iAdd(this.velocity);
         }
     }
 
     private void emitLights(long currentTime) {
         // Add primary lights.
-        XVector offset = XVector.polar(
-                XSpaceBattle.CHAOS.uniform(PRIMARY_EXPLOSION_DEVIANCE),
-                XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8));
-        this.primaryLights.add(
-                new XTimothyLight(this.position.add(offset),
-                        new XVector(),
-                        PRIMARY_EXPLOSION_START_DIAMETER,
-                        PRIMARY_EXPLOSION_STOP_DIAMETER,
-                        PRIMARY_EXPLOSION_LIFE_SPAN,
-                        0,
-                        PALETTE,
-                        currentTime));
+        XVector offset = XVector.polar(XRandom.sUniform(PRIMARY_EXPLOSION_DEVIANCE), XRandom.sVonMisesVariate());
+        this.primaryLights.add(new XTimothyLight(
+                this.position.add(offset),
+                new XVector(),
+                PRIMARY_EXPLOSION_START_DIAMETER,
+                PRIMARY_EXPLOSION_STOP_DIAMETER,
+                PRIMARY_EXPLOSION_LIFE_SPAN,
+                0,
+                PALETTE,
+                currentTime
+        ));
         // Add secondary lights.
         IntStream.range(0, SECONDARY_EXPLOSION_EMITTER_COUNT).forEach(a -> {
             XVector velocity = XVector.polar(
-                    XSpaceBattle.CHAOS.uniform(SECONDARY_EXPLOSION_MIN_SPEED, SECONDARY_EXPLOSION_MAX_SPEED),
-                    XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8));
+                    XRandom.sUniform(SECONDARY_EXPLOSION_MIN_SPEED, SECONDARY_EXPLOSION_MAX_SPEED),
+                    XRandom.sVonMisesVariate()
+            );
             this.secondaryLights.add(new XTimothyLight(
                     this.position.copy(),
                     velocity,
@@ -75,7 +75,8 @@ class XTimothyExplosion {
                     SECONDARY_EXPLOSION_LIFE_SPAN,
                     0,
                     PALETTE,
-                    currentTime));
+                    currentTime
+            ));
         });
     }
 

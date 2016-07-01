@@ -10,22 +10,29 @@ class XTeslaStrike {
     private static int tag = 1;
     private final ArrayList<XLightningSegment> segments;
 
-    XTeslaStrike(XPlayer player, XAsteroidManager asteroidManager, XWeaponManager weaponManager, long currentTime) {
+    XTeslaStrike(
+            Dimension size,
+            XPlayer player,
+            XAsteroidManager asteroidManager,
+            XWeaponManager weaponManager,
+            long currentTime
+    ) {
         this.segments = new ArrayList<>();
         this.segments.add(new XLightningSegment(
+                size,
                 player.getNosePosition(),
-                player.getDirection() + XVector.CIRCLE_4_8,
+                player.getDirection(),
                 asteroidManager,
                 XTeslaStrike.tag++,
                 weaponManager,
-                1,
                 this.segments,
-                currentTime));
+                currentTime
+        ));
     }
 
-    void move(Dimension size, long currentTime) {
+    void move(long currentTime) {
         ArrayList<XLightningSegment> created = new ArrayList<>();
-        this.segments.forEach(segment -> segment.move(size, created, currentTime));
+        this.segments.forEach(segment -> segment.move(created, currentTime));
         this.segments.addAll(created);
     }
 

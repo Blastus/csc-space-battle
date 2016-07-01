@@ -21,25 +21,20 @@ class XStarField {
         XVector position = new XVector();
         IntStream.range(0, DESIRED_STAR_COUNT).forEach(a -> {
             // Try to find a position outside the margin of other stars.
-            try {
-                IntStream.range(0, PATIENCE).forEach(b -> {
-                    position.random(size);
-                    if (!this.positions.stream().anyMatch(point -> position.sub(point).getMagnitude() <
-                            MIN_STAR_MARGIN))
-                        // TODO this class may be removed if proper streaming techniques are used
-                        throw new XFoundEvent();
-                });
-            } catch (XFoundEvent event) {
+            IntStream.range(0, PATIENCE).filter(b -> {
+                position.random(size);
+                return !this.positions.stream().anyMatch(point -> position.sub(point).getMagnitude() < MIN_STAR_MARGIN);
+            }).findFirst().ifPresent(b -> {
                 this.positions.add(position.copy());
-                this.colors.add((XColor) XSpaceBattle.CHAOS.choice(RED_STAR, BLUE_STAR));
-            }
+                this.colors.add((XColor) XRandom.sChoice(RED_STAR, BLUE_STAR));
+            });
         });
     }
 
     void draw(Graphics surface) {
         ListIterator<XVector> iterator = this.positions.listIterator();
         while (iterator.hasNext()) {
-            surface.setColor(XColor.WHITE.interpolateRandom(this.colors.get(iterator.nextIndex())).value());
+            surface.setColor(XColor.WHITE.interpolateRandom(this.colors.get(iterator.nextIndex())));
             XVector position = iterator.next();
             surface.drawRect(position.getIntX(), position.getIntY(), 0, 0);
         }

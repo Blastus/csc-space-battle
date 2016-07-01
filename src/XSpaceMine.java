@@ -5,28 +5,29 @@ import java.awt.*;
  */
 class XSpaceMine extends XWeapon {
     static final int COOLING_TIME = 500;
-    private static final int MINE_DIAMETER = 12;
+    private static final int MINE_RADIUS = 6;
     private static final int MINE_LIFE_SPAN = 100000;
     private static final int INDICATOR_TIME_SLICE = 500;
-    private static final Color[] INDICATOR = {
-            XColor.YELLOW.value(),
-            XColor.BLACK.interpolate(0.5, XColor.GREEN).value()
+    private static final XColor[] INDICATOR = {
+            XColor.YELLOW,
+            XColor.BLACK.interpolate(0.5, XColor.GREEN)
     };
 
-    XSpaceMine(XVector position, long currentTime) {
-        super(position, new XVector(), MINE_DIAMETER, MINE_LIFE_SPAN, currentTime);
+    XSpaceMine(Dimension size, XVector position, long currentTime) {
+        super(size, position, new XVector(), MINE_RADIUS, MINE_LIFE_SPAN, currentTime);
     }
 
     void draw(Graphics surface, long currentTime) {
         super.draw(surface, currentTime);
         int offset = (int) (currentTime / INDICATOR_TIME_SLICE % INDICATOR.length);
         surface.setColor(INDICATOR[offset]);
-        // TODO create and use new variables called indicatorDiameter and indicatorRadius
-        int halfRadius = this.radius >> 1;
+        int indicatorDiameter = this.radius;
+        int indicatorRadius = indicatorDiameter >> 1;
         surface.fillOval(
-                this.position.getIntX() - halfRadius,
-                this.position.getIntY() - halfRadius,
-                this.radius,
-                this.radius);
+                this.position.getIntX() - indicatorRadius,
+                this.position.getIntY() - indicatorRadius,
+                indicatorDiameter,
+                indicatorDiameter
+        );
     }
 }

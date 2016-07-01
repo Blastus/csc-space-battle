@@ -9,8 +9,8 @@ class XTextWriter {
     private static final int SHADOW_OFFSET = 2;
     private final Dimension size;
     private final Font typeface;
-    private final Color foreground;
-    private final Color background;
+    private final XColor foreground;
+    private final XColor background;
 
     XTextWriter(Dimension size, Font typeface, XColor foreground) {
         this(size, typeface, foreground, XColor.BLACK.interpolate(FOREGROUND_TO_BACKGROUND_BIAS, foreground));
@@ -19,21 +19,25 @@ class XTextWriter {
     XTextWriter(Dimension size, Font typeface, XColor foreground, XColor background) {
         this.size = size;
         this.typeface = typeface;
-        this.foreground = foreground.value();
-        this.background = background.value();
+        this.foreground = foreground;
+        this.background = background;
     }
 
     void write(Graphics surface, String text, XAnchor canvasAnchor, XAnchor stringAnchor, XVector offset) {
         double canvasWidth = this.size.getWidth();
         double canvasHeight = this.size.getHeight();
         XVector canvasAnchorPosition = this.getAnchorPosition(canvasAnchor, (int) canvasWidth, (int) canvasHeight);
+        this.write(surface, text, canvasAnchorPosition.add(offset), stringAnchor);
+    }
+
+    void write(Graphics surface, String text, XVector startingPoint, XAnchor stringAnchor) {
         surface.setFont(this.typeface);
         FontMetrics metrics = surface.getFontMetrics();
         Rectangle2D stringBounds = metrics.getStringBounds(text, surface);
         double stringWidth = stringBounds.getWidth();
         double stringHeight = stringBounds.getHeight();
         XVector stringAnchorPosition = this.getAnchorPosition(stringAnchor, (int) stringWidth, (int) stringHeight);
-        XVector finalPosition = canvasAnchorPosition.sub(stringAnchorPosition).add(offset);
+        XVector finalPosition = startingPoint.sub(stringAnchorPosition);
         surface.setColor(this.background);
         surface.drawString(text, finalPosition.getIntX() + SHADOW_OFFSET, finalPosition.getIntY() + SHADOW_OFFSET);
         surface.setColor(this.foreground);

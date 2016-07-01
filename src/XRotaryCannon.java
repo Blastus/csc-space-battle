@@ -1,12 +1,14 @@
+import java.awt.*;
+
 /*
  * Created by Stephen "Zero" Chappell on 7 June 2016.
  */
 class XRotaryCannon extends XWeapon {
     static final int COOLING_TIME = 50;
-    private static final int PROJECTILE_DIAMETER = 5;
+    private static final int PROJECTILE_RADIUS = 2;
     private static final int PROJECTILE_LIFE_SPAN = 500;
 
-    XRotaryCannon(XVector position, XVector velocity, long currentTime) {
-        super(position, velocity, PROJECTILE_DIAMETER, PROJECTILE_LIFE_SPAN, currentTime);
+    XRotaryCannon(Dimension size, XVector position, XVector velocity, long currentTime) {
+        super(size, position, velocity, PROJECTILE_RADIUS, PROJECTILE_LIFE_SPAN, currentTime);
     }
 }

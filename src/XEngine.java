@@ -10,7 +10,7 @@ class XEngine implements ActionListener {
     private static final Font TEXT_STYLE = new Font("Verdana", Font.PLAIN, 25);
     private static final XColor WEAPON_COLOR = XColor.RED;
     private static final XColor POINTS_COLOR = XColor.GREEN;
-    private static final Color BACKGROUND_COLOR = XColor.BLACK.value();
+    private static final XColor BACKGROUND_COLOR = XColor.BLACK;
     private static final int DEATH_HANDLER_DELAY = XPlayer.DEATH_LIFE_SPAN + 3000;
     private static final XAnchor WEAPON_CANVAS_ANCHOR = XAnchor.NORTH_WEST;
     private static final XAnchor WEAPON_STRING_ANCHOR = XAnchor.NORTH_WEST;
@@ -49,26 +49,20 @@ class XEngine implements ActionListener {
                     Timer resuscitator = new Timer(DEATH_HANDLER_DELAY, this);
                     resuscitator.setActionCommand("revive");
                     resuscitator.start();
-                },
-                currentTime);
+                }
+        );
         this.enableCheating = false;
         this.starField = new XStarField(size);
-        // TODO the following arguments will fit on one line
-        this.asteroidManager = new XAsteroidManager(
-                size,
-                this.player,
-                this.specialEffects);
-        // TODO the following arguments will fit on one line
-        this.healthManager = new XHealthManager(
-                size,
-                XPlayer.getShape(XVector.CIRCLE_2_8));
+        this.asteroidManager = new XAsteroidManager(size, this.player, this.specialEffects);
+        this.healthManager = new XHealthManager(size, XPlayer.getShape(XPlayer.INITIAL_PLAYER_DIRECTION), TEXT_STYLE);
         this.weaponManager = new XWeaponManager(
                 size,
                 this.asteroidManager,
                 this.healthManager,
                 this.input,
                 this.player,
-                this.specialEffects);
+                this.specialEffects
+        );
         this.hyperspaceManager = new XHyperspaceManager(
                 size,
                 this.input,
@@ -76,7 +70,8 @@ class XEngine implements ActionListener {
                 this.asteroidManager,
                 this.specialEffects,
                 this.weaponManager,
-                currentTime);
+                currentTime
+        );
         this.weaponWriter = new XTextWriter(size, TEXT_STYLE, WEAPON_COLOR);
         this.pointsWriter = new XTextWriter(size, TEXT_STYLE, POINTS_COLOR);
     }
@@ -154,13 +149,15 @@ class XEngine implements ActionListener {
                 this.weaponManager.getCurrentWeaponName(),
                 WEAPON_CANVAS_ANCHOR,
                 WEAPON_STRING_ANCHOR,
-                WEAPON_OFFSET);
+                WEAPON_OFFSET
+        );
         this.pointsWriter.write(
                 surface,
                 Integer.toString(this.healthManager.getScore()),
                 POINTS_CANVAS_ANCHOR,
                 POINTS_STRING_ANCHOR,
-                POINTS_OFFSET);
+                POINTS_OFFSET
+        );
         this.weaponManager.drawStatus(surface, WEAPON_STATUS_OFFSET, currentTime);
         this.healthManager.draw(surface);
     }

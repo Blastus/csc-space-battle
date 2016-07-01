@@ -10,8 +10,8 @@ import java.util.stream.IntStream;
 class XAsteroidManager {
     private static final int STARTING_ASTEROID_COUNT = 2;
     private static final int ASTEROID_COUNT_INCREMENT = 1;
-    private static final int STARTING_ASTEROID_DIAMETER = 50;
-    private static final int CAN_CREATE_FRAGMENTS = 25;
+    private static final int STARTING_ASTEROID_RADIUS = 25;
+    private static final int CAN_CREATE_FRAGMENTS = 12;
     private static final int STARTING_ASTEROID_SPEED = 2;
     private static final int SAFETY_SCALE = 3;
     private static final int TIME_MULTIPLIER = 20;
@@ -21,8 +21,6 @@ class XAsteroidManager {
             2.0
     };
     private final Dimension size;
-    // TODO replace asteroidCountIncrement with ASTEROID_COUNT_INCREMENT
-    private final int asteroidCountIncrement;
     private final XPlayer player;
     private final XSpecialEffects specialEffects;
     private final ArrayList<XAsteroid> asteroids;
@@ -31,7 +29,6 @@ class XAsteroidManager {
     XAsteroidManager(Dimension size, XPlayer player, XSpecialEffects specialEffects) {
         this.size = size;
         this.currentAsteroidCount = STARTING_ASTEROID_COUNT;
-        this.asteroidCountIncrement = ASTEROID_COUNT_INCREMENT;
         this.player = player;
         this.specialEffects = specialEffects;
         this.asteroids = new ArrayList<>();
@@ -39,29 +36,26 @@ class XAsteroidManager {
     }
 
     private void spawn() {
-        // TODO rename position to be asteroidPosition
-        XVector position = new XVector();
-        int safetyMargin = ((STARTING_ASTEROID_DIAMETER >> 1) + XPlayer.RADIUS) * SAFETY_SCALE;
+        XVector asteroidPosition = new XVector();
+        int safetyMargin = (STARTING_ASTEROID_RADIUS + this.player.getRadius()) * SAFETY_SCALE;
         XVector playerPosition = this.player.getPosition();
         IntStream.range(0, this.currentAsteroidCount).forEach(a -> {
             do {
-                position.random(this.size);
-            } while (position.sub(playerPosition).getMagnitude() < safetyMargin);
-            // TODO create asteroid so that it knows this.size
+                asteroidPosition.random(this.size);
+            } while (asteroidPosition.sub(playerPosition).getMagnitude() < safetyMargin);
             this.asteroids.add(new XAsteroid(
-                    new XCircle(position.copy(), STARTING_ASTEROID_DIAMETER),
-                    XVector.polar(STARTING_ASTEROID_SPEED, XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8))));
+                    this.size,
+                    new XCircle(asteroidPosition.copy(), STARTING_ASTEROID_RADIUS),
+                    XVector.polar(STARTING_ASTEROID_SPEED, XRandom.sVonMisesVariate())
+            ));
         });
-        this.currentAsteroidCount += this.asteroidCountIncrement;
+        this.currentAsteroidCount += ASTEROID_COUNT_INCREMENT;
     }
 
     void move(boolean cheating, long currentTime) {
-        XCircle playerShape = this.player.isAlive() ?
-                new XCircle(this.player.getPosition(), XPlayer.RADIUS << 1) :
-                null;
         ArrayList<XAsteroid> collisions = this.asteroids.stream().filter(asteroid -> {
-            asteroid.move(this.size);
-            return playerShape != null && asteroid.getShape().overlaps(playerShape);
+            asteroid.move();
+            return this.player.isAlive() && asteroid.overlaps(this.player);
         }).collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
         if (collisions.size() > 0) {
             if (!cheating)
@@ -71,8 +65,7 @@ class XAsteroidManager {
     }
 
     void draw(Graphics surface) {
-        // TODO drop .stream() since it is not needed
-        this.asteroids.stream().forEach(asteroid -> asteroid.draw(surface));
+        this.asteroids.forEach(asteroid -> asteroid.draw(surface));
     }
 
     XAsteroid findClosest(XVector position) {
@@ -96,7 +89,7 @@ class XAsteroidManager {
 
     ArrayList<XAsteroid> findInRange(XWeapon weapon) {
         return this.asteroids.stream()
-                .filter(asteroid -> asteroid.getShape().overlaps(weapon))
+                .filter(asteroid -> asteroid.overlaps(weapon))
                 .collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
     }
 
@@ -116,7 +109,8 @@ class XAsteroidManager {
                         radius,
                         diameter * TIME_MULTIPLIER + ADDITIONAL_TIME,
                         XSpecialEffects.WARM,
-                        currentTime);
+                        currentTime
+                );
             }
             // Create debris from the destruction.
             this.specialEffects.spawn(asteroid, currentTime);
@@ -126,14 +120,19 @@ class XAsteroidManager {
     }
 
     private void createFragments(XAsteroid asteroid) {
-        if (asteroid.getDiameter() >= CAN_CREATE_FRAGMENTS) {
+        if (asteroid.getRadius() >= CAN_CREATE_FRAGMENTS) {
             Arrays.stream(FRAGMENT_SPEED_MULTIPLIERS).forEach(speedMultiplier -> {
                 XVector position = asteroid.getPosition().copy();
                 XVector velocity = XVector.polar(
                         asteroid.getVelocity().getMagnitude() * speedMultiplier,
-                        XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8));
-                XAsteroid newAsteroid = new XAsteroid(new XCircle(position, asteroid.getRadius()), velocity);
-                if (XSpaceBattle.CHAOS.random() > XTeslaStrike.FRAGMENT_HIT_CHANCE)
+                        XRandom.sVonMisesVariate()
+                );
+                XAsteroid newAsteroid = new XAsteroid(
+                        this.size,
+                        new XCircle(position, asteroid.getRadius() >> 1),
+                        velocity
+                );
+                if (XRandom.sRandom() > XTeslaStrike.FRAGMENT_HIT_CHANCE)
                     // Asteroids may not be hit by a tesla strike if they have the same tag as the tesla strike.
                     newAsteroid.copyTag(asteroid);
                 this.asteroids.add(newAsteroid);

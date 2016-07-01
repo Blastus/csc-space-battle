@@ -5,7 +5,6 @@ import java.awt.*;
  * Created by Stephen "Zero" Chappell on 27 May 2016.
  */
 class XSpaceBattle extends JFrame {
-    static final XRandom CHAOS = new XRandom();
     private static final String WINDOW_TITLE = "Space Battle";
     private static final int CANVAS_WIDTH = 800;
     private static final int CANVAS_HEIGHT = 600;
@@ -32,10 +31,6 @@ class XSpaceBattle extends JFrame {
         this.updater.start();
     }
 
-    // TODO find all instances of "\($" and make sure they are like XPlayer.SHAPE
-    // TODO ensure that Dimension size is stored using an object's constructor if it is ever needed
-    // TODO avoid writing "(double)variable" when "1.0 * variable" will be sufficient
-    // TODO refactor usage of XRandom once it is rewritten as a singleton
     public static void main(String[] argv) {
         new XSpaceBattle();
     }
