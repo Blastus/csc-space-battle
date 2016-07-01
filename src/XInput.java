@@ -45,10 +45,9 @@ class XInput implements KeyListener {
             case KeyEvent.VK_7:
             case KeyEvent.VK_8:
             case KeyEvent.VK_9:
-                // TODO this.weaponOffset should change only if in range of XWeaponManager.SUPPORTED_WEAPONS
-                this.weaponOffset = Math.min(
-                        Character.getNumericValue(event.getKeyChar()),
-                        XWeaponManager.SUPPORTED_WEAPONS) - 1;
+                int newOffset = Character.getNumericValue(event.getKeyChar()) - 1;
+                if (newOffset < XWeaponManager.SUPPORTED_WEAPONS)
+                    this.weaponOffset = newOffset;
                 break;
             // Handle changing request flags.
             case KeyEvent.VK_C:

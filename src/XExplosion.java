@@ -24,7 +24,8 @@ class XExplosion {
             int particleCount,
             int lifeSpan,
             XColor[] palette,
-            long currentTime) {
+            long currentTime
+    ) {
         this.position = position;
         this.effectSize = effectSize;
         this.particleSize = particleSize;
@@ -35,42 +36,34 @@ class XExplosion {
     }
 
     boolean draw(Graphics surface, long currentTime) {
-        // TODO a ratio should be calculated here
-        if (currentTime - this.bornTime > this.lifeSpan)
+        double ratio = 1.0 * (currentTime - this.bornTime) / this.lifeSpan;
+        if (ratio > 1)
             // Signal the caller to remove the explosion.
             return true;
-        double scale = this.getScale(currentTime);
+        double scale = this.getScale(ratio);
         double currentEffectSize = this.effectSize * scale;
         double currentParticleSize = this.particleSize * scale;
         int particleDiameter = (int) currentParticleSize;
         double particleRadius = currentParticleSize / 2;
         IntStream.range(0, this.particleCount).forEach(a -> {
-            surface.setColor(XColor.interpolateRandom(this.palette).value());
-            XVector offset = XVector.polar(
-                    XSpaceBattle.CHAOS.uniform(currentEffectSize),
-                    XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8));
-            offset.ipAdd(this.position);
+            surface.setColor(XColor.interpolateRandom(this.palette));
+            XVector offset = XVector.polar(XRandom.sUniform(currentEffectSize), XRandom.sVonMisesVariate());
+            offset.iAdd(this.position);
             surface.fillOval(
                     (int) (offset.getX() - particleRadius),
                     (int) (offset.getY() - particleRadius),
                     particleDiameter,
-                    particleDiameter);
+                    particleDiameter
+            );
         });
         return false;
     }
 
-    // TODO this method should accept a ratio instead of calculating it
-    private double getScale(long currentTime) {
-        double ratio = 1.0 * (currentTime - this.bornTime) / this.lifeSpan;
+    private double getScale(double ratio) {
         return ratio < MIDDLE_BIAS ?
                 // If MIDDLE_SIZE is larger than START_SIZE, the explosion is getting larger.
-                this.interpolate(ratio / MIDDLE_BIAS, START_SIZE, MIDDLE_SIZE) :
+                XRandom.interpolate(START_SIZE, MIDDLE_SIZE, ratio / MIDDLE_BIAS) :
                 // If MIDDLE_SIZE is larger than STOP_SIZE, the explosion is getting smaller.
-                this.interpolate((ratio - MIDDLE_BIAS) / (1 - MIDDLE_BIAS), MIDDLE_SIZE, STOP_SIZE);
-    }
-
-    private double interpolate(double bias, double first, double second) {
-        double alpha = 1 - bias;
-        return first * alpha + second * bias;
+                XRandom.interpolate(MIDDLE_SIZE, STOP_SIZE, (ratio - MIDDLE_BIAS) / (1 - MIDDLE_BIAS));
     }
 }

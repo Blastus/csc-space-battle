@@ -51,7 +51,8 @@ class XWeaponManager {
             XHealthManager healthManager,
             XInput input,
             XPlayer player,
-            XSpecialEffects specialEffects) {
+            XSpecialEffects specialEffects
+    ) {
         this.size = size;
         this.asteroidManager = asteroidManager;
         this.healthManager = healthManager;
@@ -67,13 +68,13 @@ class XWeaponManager {
     void move(long currentTime) {
         // Move the tesla strike if it exists.
         if (this.teslaStrike != null) {
-            this.teslaStrike.move(this.size, currentTime);
+            this.teslaStrike.move(currentTime);
             if (!this.teslaStrike.isAlive())
                 this.teslaStrike = null;
         }
         // Move all live ammunition and collide with asteroids.
         this.weapons.removeIf(weapon -> {
-            weapon.move(this.size);
+            weapon.move();
             ArrayList<XAsteroid> asteroids = this.asteroidManager.findInRange(weapon);
             int hitAsteroids = asteroids.size();
             if (hitAsteroids > 0) {
@@ -93,8 +94,7 @@ class XWeaponManager {
     }
 
     void drawProjectiles(Graphics surface, long currentTime) {
-        // TODO drop .stream() since it is not needed
-        this.weapons.stream().forEach(weapon -> weapon.draw(surface, currentTime));
+        this.weapons.forEach(weapon -> weapon.draw(surface, currentTime));
     }
 
     void drawLightning(Graphics surface) {
@@ -111,28 +111,30 @@ class XWeaponManager {
             XVector canvasAnchorPosition = new XVector(0, this.size.getHeight());
             XVector figureAnchorPosition = new XVector(0, STATUS_HEIGHT);
             XVector finalPosition = canvasAnchorPosition.sub(figureAnchorPosition).add(offset);
-            surface.setColor(XColor.interpolate(status, STATUS_PALETTE).value());
+            surface.setColor(XColor.interpolate(status, STATUS_PALETTE));
             surface.fillRoundRect(
                     finalPosition.getIntX(),
                     finalPosition.getIntY(),
                     (int) (status * STATUS_WIDTH) + STATUS_HEIGHT,
                     STATUS_HEIGHT,
                     STATUS_HEIGHT,
-                    STATUS_HEIGHT);
-            surface.setColor(XColor.interpolate(1 - status, STATUS_PALETTE).value());
+                    STATUS_HEIGHT
+            );
+            surface.setColor(XColor.interpolate(1 - status, STATUS_PALETTE));
             surface.drawRoundRect(
                     finalPosition.getIntX(),
                     finalPosition.getIntY(),
                     (int) (status * STATUS_WIDTH) + STATUS_HEIGHT,
                     STATUS_HEIGHT,
                     STATUS_HEIGHT,
-                    STATUS_HEIGHT);
+                    STATUS_HEIGHT
+            );
         }
     }
 
     void requestLightningHit(XVector position, long currentTime) {
         // A generic weapon will exist for less than one frame and can destroy an asteroid.
-        this.weapons.add(new XWeapon(position, currentTime));
+        this.weapons.add(new XWeapon(this.size, position, currentTime));
     }
 
     void handleFireRequest(long currentTime) {
@@ -146,29 +148,39 @@ class XWeaponManager {
                 case 0:
                     // Rotary Cannon
                     this.newWeapons.add(new XRotaryCannon(
+                            this.size,
                             this.player.getPosition().copy(),
                             this.getProjectileVelocity(),
-                            currentTime));
+                            currentTime
+                    ));
                     break;
                 case 1:
                     // Guided Missile
                     this.newWeapons.add(new XGuidedMissile(
+                            this.size,
                             this.player.getPosition().copy(),
                             this.getProjectileVelocity(),
                             this.asteroidManager,
-                            currentTime));
+                            currentTime
+                    ));
                     break;
                 case 2:
                     // Space Mine
-                    this.newWeapons.add(new XSpaceMine(this.player.getPosition().copy(), currentTime));
+                    this.newWeapons.add(new XSpaceMine(this.size, this.player.getPosition().copy(), currentTime));
                     break;
                 case 3:
                     // Cluster Crack
-                    this.newWeapons.addAll(XClusterCrack.fire(this.player, currentTime));
+                    this.newWeapons.addAll(XClusterCrack.fire(this.size, this.player, currentTime));
                     break;
                 case 4:
                     // Tesla Strike
-                    this.teslaStrike = new XTeslaStrike(this.player, this.asteroidManager, this, currentTime);
+                    this.teslaStrike = new XTeslaStrike(
+                            this.size,
+                            this.player,
+                            this.asteroidManager,
+                            this,
+                            currentTime
+                    );
                     break;
                 default:
                     throw new RuntimeException("requested weapon case was not handled");
@@ -181,9 +193,7 @@ class XWeaponManager {
     }
 
     private XVector getProjectileVelocity() {
-        return this.player.getVelocity().add(XVector.polar(
-                MAX_WEAPON_SPEED,
-                XVector.CIRCLE_2_8 - this.player.getDirection()));
+        return this.player.getVelocity().add(XVector.polar(MAX_WEAPON_SPEED, this.player.getDirection()));
     }
 
     void initiateHyperspaceStorm(long currentTime) {
@@ -197,11 +207,14 @@ class XWeaponManager {
                     HYPERSPACE_STORM_PARTICLE_COUNT,
                     XHyperspaceManager.LIVING_LIFE_SPAN,
                     XSpecialEffects.COOL,
-                    currentTime);
+                    currentTime
+            );
             this.weapons.add(new XWeapon(
+                    this.size,
                     position,
-                    (int) (HYPERSPACE_STORM_EFFECT_SIZE * XExplosion.START_SIZE),
-                    currentTime));
+                    (int) (HYPERSPACE_STORM_EFFECT_SIZE * XExplosion.START_SIZE / 2),
+                    currentTime
+            ));
         });
     }
 }

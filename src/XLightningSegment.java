@@ -18,6 +18,7 @@ class XLightningSegment {
             XColor.WHITE,
             XColor.YELLOW
     };
+    private final Dimension size;
     private final XVector position;
     private final double direction;
     private final XAsteroidManager asteroidManager;
@@ -29,6 +30,20 @@ class XLightningSegment {
     private int frames;
 
     XLightningSegment(
+            Dimension size,
+            XVector position,
+            double direction,
+            XAsteroidManager asteroidManager,
+            int tag,
+            XWeaponManager weaponManager,
+            ArrayList<XLightningSegment> segments,
+            long currentTime
+    ) {
+        this(size, position, direction, asteroidManager, tag, weaponManager, 1, segments, currentTime);
+    }
+
+    private XLightningSegment(
+            Dimension size,
             XVector position,
             double direction,
             XAsteroidManager asteroidManager,
@@ -36,9 +51,11 @@ class XLightningSegment {
             XWeaponManager weaponManager,
             int treeDepth,
             ArrayList<XLightningSegment> segments,
-            long currentTime) {
+            long currentTime
+    ) {
+        this.size = size;
         this.position = position;
-        this.direction = direction + XSpaceBattle.CHAOS.uniform(-DIRECTION_DEVIANCE, +DIRECTION_DEVIANCE);
+        this.direction = direction + XRandom.sUniform(-DIRECTION_DEVIANCE, +DIRECTION_DEVIANCE);
         this.asteroidManager = asteroidManager;
         this.tag = tag;
         this.weaponManager = weaponManager;
@@ -50,18 +67,19 @@ class XLightningSegment {
             this.endPoint = target.getPosition();
             weaponManager.requestLightningHit(this.endPoint, currentTime);
         } else
-            this.endPoint = position.add(XVector.polar(SEGMENT_LENGTH, XVector.CIRCLE_6_8 - this.direction));
+            this.endPoint = position.add(XVector.polar(SEGMENT_LENGTH, this.direction));
         this.treeDepth = treeDepth;
         this.segments = segments;
         this.frames = 0;
     }
 
-    void move(Dimension size, ArrayList<XLightningSegment> created, long currentTime) {
+    void move(ArrayList<XLightningSegment> created, long currentTime) {
         // Create more segments as necessary.
-        if (this.frames == FRAME_MOVE_DELAY && this.endPoint.inBox(0, 0, size.getWidth(), size.getHeight())) {
-            if (this.treeDepth < MIN_TREE_DEPTH || XSpaceBattle.CHAOS.random() >
+        if (this.frames == FRAME_MOVE_DELAY && this.endPoint.inBox(0, 0, this.size.getWidth(), this.size.getHeight())) {
+            if (this.treeDepth < MIN_TREE_DEPTH || XRandom.sRandom() >
                     1.0 * (this.treeDepth - MIN_TREE_DEPTH) / (MAX_TREE_DEPTH - MIN_TREE_DEPTH))
                 created.add(new XLightningSegment(
+                        this.size,
                         this.endPoint,
                         this.direction,
                         this.asteroidManager,
@@ -69,27 +87,32 @@ class XLightningSegment {
                         this.weaponManager,
                         this.treeDepth + 1,
                         this.segments,
-                        currentTime));
-            if (XSpaceBattle.CHAOS.random() <= BRANCH_RATE)
+                        currentTime
+                ));
+            if (XRandom.sRandom() <= BRANCH_RATE) {
                 created.add(new XLightningSegment(
+                        this.size,
                         this.endPoint,
-                        this.direction + (Double) XSpaceBattle.CHAOS.choice(-BRANCH_DEVIANCE, +BRANCH_DEVIANCE),
+                        this.direction + (Double) XRandom.sChoice(-BRANCH_DEVIANCE, +BRANCH_DEVIANCE),
                         this.asteroidManager,
                         this.tag,
                         this.weaponManager,
                         this.treeDepth + 1,
                         this.segments,
-                        currentTime));
+                        currentTime
+                ));
+            }
         }
     }
 
     boolean draw(Graphics surface) {
-        surface.setColor(XColor.interpolateRandom(COLOR_POSSIBILITIES).value());
+        surface.setColor(XColor.interpolateRandom(COLOR_POSSIBILITIES));
         surface.drawLine(
                 this.position.getIntX(),
                 this.position.getIntY(),
                 this.endPoint.getIntX(),
-                this.endPoint.getIntY());
+                this.endPoint.getIntY()
+        );
         // Let the caller know if the lightning segment is done.
         return ++this.frames >= FRAME_LIFE_SPAN;
     }

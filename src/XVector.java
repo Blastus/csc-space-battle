@@ -27,7 +27,7 @@ class XVector {
     }
 
     static XVector polar(double magnitude, double direction) {
-        return new XVector(magnitude * Math.sin(direction), magnitude * Math.cos(direction));
+        return new XVector(magnitude * Math.cos(direction), magnitude * Math.sin(direction));
     }
 
     public String toString() {
@@ -39,7 +39,8 @@ class XVector {
                 "{0}.polar({1}, {2})",
                 this.getClass().getName(),
                 this.getMagnitude(),
-                this.getDirection());
+                this.getDirection()
+        );
     }
 
     double getX() {
@@ -68,7 +69,7 @@ class XVector {
     }
 
     void setMagnitude(double magnitude) {
-        this.ipMul(magnitude / this.getMagnitude());
+        this.iMul(magnitude / this.getMagnitude());
     }
 
     void addMagnitude(double magnitude) {
@@ -76,14 +77,14 @@ class XVector {
     }
 
     double getDirection() {
-        return Math.atan2(this.x, this.y);
+        return Math.atan2(this.y, this.x);
     }
 
 
     void setDirection(double direction) {
         double magnitude = this.getMagnitude();
-        this.x = magnitude * Math.sin(direction);
-        this.y = magnitude * Math.cos(direction);
+        this.x = magnitude * Math.cos(direction);
+        this.y = magnitude * Math.sin(direction);
     }
 
     void addDirection(double direction) {
@@ -99,118 +100,117 @@ class XVector {
         this.y = other.y;
     }
 
-    // TODO change (double other) to be (double value) in all cases
-    XVector add(double other) {
-        return new XVector(this.x + other, this.y + other);
+    XVector add(double value) {
+        return new XVector(this.x + value, this.y + value);
     }
 
     XVector add(XVector other) {
         return new XVector(this.x + other.x, this.y + other.y);
     }
 
-    XVector sub(double other) {
-        return new XVector(this.x - other, this.y - other);
+    XVector sub(double value) {
+        return new XVector(this.x - value, this.y - value);
     }
 
     XVector sub(XVector other) {
         return new XVector(this.x - other.x, this.y - other.y);
     }
 
-    XVector mul(double other) {
-        return new XVector(this.x * other, this.y * other);
+    XVector mul(double value) {
+        return new XVector(this.x * value, this.y * value);
     }
 
     XVector mul(XVector other) {
         return new XVector(this.x * other.x, this.y * other.y);
     }
 
-    XVector div(double other) {
-        return new XVector(this.x / other, this.y / other);
+    XVector div(double value) {
+        return new XVector(this.x / value, this.y / value);
     }
 
     XVector div(XVector other) {
         return new XVector(this.x / other.x, this.y / other.y);
     }
 
-    XVector mod(double other) {
-        return new XVector(this.x % other, this.y % other);
+    XVector mod(double value) {
+        return new XVector(this.x % value, this.y % value);
     }
 
     XVector mod(XVector other) {
         return new XVector(this.x % other.x, this.y % other.y);
     }
 
-    XVector pow(double other) {
-        return new XVector(Math.pow(this.x, other), Math.pow(this.y, other));
+    XVector pow(double value) {
+        return new XVector(Math.pow(this.x, value), Math.pow(this.y, value));
     }
 
     XVector pow(XVector other) {
         return new XVector(Math.pow(this.x, other.x), Math.pow(this.y, other.y));
     }
 
-    void ipAdd(double other) {
-        this.x += other;
-        this.y += other;
+    void iAdd(double value) {
+        this.x += value;
+        this.y += value;
     }
 
-    void ipAdd(XVector other) {
+    void iAdd(XVector other) {
         this.x += other.x;
         this.y += other.y;
     }
 
-    void ipSub(double other) {
-        this.x -= other;
-        this.y -= other;
+    void iSub(double value) {
+        this.x -= value;
+        this.y -= value;
     }
 
-    void ipSub(XVector other) {
+    void iSub(XVector other) {
         this.x -= other.x;
         this.y -= other.y;
     }
 
-    void ipMul(double other) {
-        this.x *= other;
-        this.y *= other;
+    void iMul(double value) {
+        this.x *= value;
+        this.y *= value;
     }
 
-    void ipMul(XVector other) {
+    void iMul(XVector other) {
         this.x *= other.x;
         this.y *= other.y;
     }
 
-    void ipDiv(double other) {
-        this.x /= other;
-        this.y /= other;
+    void iDiv(double value) {
+        this.x /= value;
+        this.y /= value;
     }
 
-    void ipDiv(XVector other) {
+    void iDiv(XVector other) {
         this.x /= other.x;
         this.y /= other.y;
     }
 
-    void ipMod(double other) {
-        this.x %= other;
-        this.y %= other;
+    void iMod(double value) {
+        this.x %= value;
+        this.y %= value;
     }
 
-    void ipMod(XVector other) {
+    void iMod(XVector other) {
         this.x %= other.x;
         this.y %= other.y;
     }
 
-    void ipPow(double other) {
-        this.x = Math.pow(this.x, other);
-        this.y = Math.pow(this.y, other);
+    void iPow(double value) {
+        this.x = Math.pow(this.x, value);
+        this.y = Math.pow(this.y, value);
     }
 
-    void ipPow(XVector other) {
+    void iPow(XVector other) {
         this.x = Math.pow(this.x, other.x);
         this.y = Math.pow(this.y, other.y);
     }
 
     void random(Dimension size) {
-        this.x = XSpaceBattle.CHAOS.uniform(size.getWidth());
-        this.y = XSpaceBattle.CHAOS.uniform(size.getHeight());
+        this.x = XRandom.sUniform(size.getWidth());
+        this.y = XRandom.sUniform(size.getHeight());
     }
 
     void clampXY(Dimension size) {

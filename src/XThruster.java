@@ -23,11 +23,12 @@ class XThruster {
         int x = this.position.getIntX();
         int y = this.position.getIntY();
         IntStream.range(0, this.particleCount).forEach(a -> {
-            surface.setColor(XColor.RED.interpolateRandom(XColor.YELLOW).value());
+            surface.setColor(XColor.RED.interpolateRandom(XColor.YELLOW));
             XVector end = XVector.polar(
-                    XSpaceBattle.CHAOS.randomInteger(this.minParticleLength, this.maxParticleLength),
-                    XSpaceBattle.CHAOS.uniform(-this.deviance, +this.deviance) - direction + XVector.CIRCLE_2_8);
-            end.ipAdd(this.position);
+                    XRandom.sRandInt(this.minParticleLength, this.maxParticleLength),
+                    direction + XRandom.sUniform(-this.deviance, +this.deviance)
+            );
+            end.iAdd(this.position);
             surface.drawLine(x, y, end.getIntX(), end.getIntY());
         });
     }

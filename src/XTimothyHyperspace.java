@@ -37,25 +37,24 @@ class XTimothyHyperspace {
     void move(long currentTime) {
         if (currentTime - this.bornTime < this.emitterLifeSpan) {
             this.emitLights(currentTime);
-            this.position.ipAdd(this.velocity);
+            this.position.iAdd(this.velocity);
         }
         this.lights.forEach(XTimothyLight::move);
     }
 
     private void emitLights(long currentTime) {
         IntStream.range(0, EMITTER_COUNT).forEach(a -> {
-            XVector velocity = XVector.polar(
-                    SPEED,
-                    XSpaceBattle.CHAOS.uniform(XVector.CIRCLE_8_8));
+            XVector velocity = XVector.polar(SPEED, XRandom.sVonMisesVariate());
             this.lights.add(new XTimothyLight(
                     this.position.copy(),
                     velocity,
                     START_DIAMETER,
                     STOP_DIAMETER,
                     LIFE_SPAN,
-                    (Double) XSpaceBattle.CHAOS.choice(-DIRECTION_CHANGE_PER_FRAME, +DIRECTION_CHANGE_PER_FRAME),
+                    (Double) XRandom.sChoice(-DIRECTION_CHANGE_PER_FRAME, +DIRECTION_CHANGE_PER_FRAME),
                     PALETTE,
-                    currentTime));
+                    currentTime
+            ));
         });
     }
 

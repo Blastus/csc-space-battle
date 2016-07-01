@@ -3,52 +3,61 @@
  */
 class XCircle {
     final XVector position;
-    int diameter;
     int radius;
+    int diameter;
 
     XCircle() {
         this(0);
     }
 
-    XCircle(int diameter) {
-        this(new XVector(), diameter);
+    XCircle(int radius) {
+        this(new XVector(), radius);
     }
 
-    XCircle(XVector position, int diameter) {
+    XCircle(XCircle other) {
+        this(other.position.copy(), other.radius);
+    }
+
+    XCircle(XVector position, int radius) {
         this.position = position;
-        this.diameter = diameter;
-        this.radius = diameter >> 1;
+        this.setRadius(radius);
     }
 
     XVector getPosition() {
         return this.position;
     }
 
-    int getDiameter() {
-        return this.diameter;
-    }
-
-    void setDiameter(int diameter) {
-        this.diameter = diameter;
-        this.radius = diameter >> 1;
-    }
-
     int getRadius() {
         return this.radius;
     }
 
-    // TODO contains should accept an XVector if it is not interested in a margin
-    boolean contains(XCircle other) {
-        return this.contains(other, 0);
+    void setRadius(int value) {
+        this.radius = value;
+        this.diameter = radius << 1;
     }
 
-    // TODO based on usage, margin should come from other.radius
-    boolean contains(XCircle other, int margin) {
-        return this.position.sub(other.position).getMagnitude() + other.radius <= this.radius - margin;
+    int getDiameter() {
+        return this.diameter;
+    }
+
+    boolean contains(XVector value) {
+        return this.position.sub(value).getMagnitude() <= this.radius;
+    }
+
+    boolean contains(XCircle other) {
+        return this.position.sub(other.position).getMagnitude() + other.radius <= this.radius;
+    }
+
+    boolean containsWithMargin(XCircle other) {
+        return this.position.sub(other.position).getMagnitude() + other.diameter <= this.radius;
     }
 
     boolean overlaps(XCircle other) {
         return this.getMarginalDistance(other) < 0;
+    }
+
+    boolean overlaps(XCircle other, int safetyFactor) {
+        return this.position.sub(other.position).getMagnitude() / safetyFactor < this.radius + other.radius;
     }
 
     boolean overlaps(XCircle other, double distanceScale) {

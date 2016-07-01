@@ -21,7 +21,8 @@ class XTimothyLight {
             int lifeSpan,
             double directionChangePerFrame,
             XColor[] palette,
-            long currentTime) {
+            long currentTime
+    ) {
         this.position = position;
         this.velocity = velocity;
         this.startDiameter = startDiameter;
@@ -33,7 +34,7 @@ class XTimothyLight {
     }
 
     void move() {
-        this.position.ipAdd(this.velocity);
+        this.position.iAdd(this.velocity);
         this.velocity.addDirection(this.directionChangePerFrame);
     }
 
@@ -42,7 +43,7 @@ class XTimothyLight {
         if (ratio >= 1)
             // Let the caller know that the light is done.
             return true;
-        surface.setColor(XColor.interpolate(ratio, this.palette).value());
+        surface.setColor(XColor.interpolate(ratio, this.palette));
         int diameter = this.startDiameter + (int) ((this.stopDiameter - this.startDiameter) * ratio);
         int radius = diameter >> 1;
         surface.fillOval(this.position.getIntX() - radius, this.position.getIntY() - radius, diameter, diameter);
