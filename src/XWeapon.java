@@ -6,22 +6,22 @@ import java.awt.*;
 class XWeapon extends XCircle {
     private static final XColor WEAPON_COLOR = XColor.RED;
     final XVector velocity;
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final int lifeSpan;
     private final long bornTime;
 
-    XWeapon(Dimension size, XVector position, long currentTime) {
+    XWeapon(Dimension canvasSize, XVector position, long currentTime) {
         // A generic weapon will destroy an asteroid it overlaps, will not exist after moving, and will never be drawn.
-        this(size, position, 0, currentTime);
+        this(canvasSize, position, 0, currentTime);
     }
 
-    XWeapon(Dimension size, XVector position, int radius, long currentTime) {
-        this(size, position, new XVector(), radius, -1, currentTime);
+    XWeapon(Dimension canvasSize, XVector position, int radius, long currentTime) {
+        this(canvasSize, position, new XVector(), radius, -1, currentTime);
     }
 
-    XWeapon(Dimension size, XVector position, XVector velocity, int radius, int lifeSpan, long currentTime) {
+    XWeapon(Dimension canvasSize, XVector position, XVector velocity, int radius, int lifeSpan, long currentTime) {
         super(position, radius);
-        this.size = size;
+        this.canvasSize = canvasSize;
         this.velocity = velocity;
         this.lifeSpan = lifeSpan;
         this.bornTime = currentTime;
@@ -29,7 +29,7 @@ class XWeapon extends XCircle {
 
     void move() {
         this.position.iAdd(this.velocity);
-        this.position.clampXY(this.size);
+        this.position.clampXY(this.canvasSize);
     }
 
     void draw(Graphics surface, long currentTime) {

@@ -20,14 +20,14 @@ class XAsteroidManager {
             1.5,
             2.0
     };
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final XPlayer player;
     private final XSpecialEffects specialEffects;
     private final ArrayList<XAsteroid> asteroids;
     private int currentAsteroidCount;
 
-    XAsteroidManager(Dimension size, XPlayer player, XSpecialEffects specialEffects) {
-        this.size = size;
+    XAsteroidManager(Dimension canvasSize, XPlayer player, XSpecialEffects specialEffects) {
+        this.canvasSize = canvasSize;
         this.currentAsteroidCount = STARTING_ASTEROID_COUNT;
         this.player = player;
         this.specialEffects = specialEffects;
@@ -41,10 +41,10 @@ class XAsteroidManager {
         XVector playerPosition = this.player.getPosition();
         IntStream.range(0, this.currentAsteroidCount).forEach(a -> {
             do {
-                asteroidPosition.random(this.size);
+                asteroidPosition.random(this.canvasSize);
             } while (asteroidPosition.sub(playerPosition).getMagnitude() < safetyMargin);
             this.asteroids.add(new XAsteroid(
-                    this.size,
+                    this.canvasSize,
                     new XCircle(asteroidPosition.copy(), STARTING_ASTEROID_RADIUS),
                     XVector.polar(STARTING_ASTEROID_SPEED, XRandom.sVonMisesVariate())
             ));
@@ -128,7 +128,7 @@ class XAsteroidManager {
                         XRandom.sVonMisesVariate()
                 );
                 XAsteroid newAsteroid = new XAsteroid(
-                        this.size,
+                        this.canvasSize,
                         new XCircle(position, asteroid.getRadius() >> 1),
                         velocity
                 );

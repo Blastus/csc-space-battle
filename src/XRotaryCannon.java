@@ -8,7 +8,7 @@ class XRotaryCannon extends XWeapon {
     private static final int PROJECTILE_RADIUS = 2;
     private static final int PROJECTILE_LIFE_SPAN = 500;
 
-    XRotaryCannon(Dimension size, XVector position, XVector velocity, long currentTime) {
-        super(size, position, velocity, PROJECTILE_RADIUS, PROJECTILE_LIFE_SPAN, currentTime);
+    XRotaryCannon(Dimension canvasSize, XVector position, XVector velocity, long currentTime) {
+        super(canvasSize, position, velocity, PROJECTILE_RADIUS, PROJECTILE_LIFE_SPAN, currentTime);
     }
 }

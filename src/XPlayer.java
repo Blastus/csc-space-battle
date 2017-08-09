@@ -32,7 +32,7 @@ class XPlayer extends XCircle {
             XVector.polar(0.1, XVector.CIRCLE_4_8),
             XVector.polar(RADIUS, XVector.CIRCLE_5_8)
     );
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final XInput input;
     private final XThruster motor;
     private final XSpecialEffects specialEffects;
@@ -43,9 +43,15 @@ class XPlayer extends XCircle {
     private boolean alive;
     private XHyperspaceManager hyperspaceManager;
 
-    XPlayer(Dimension size, XInput input, XVector position, XSpecialEffects specialEffects, Runnable handleDeath) {
+    XPlayer(
+            Dimension canvasSize,
+            XInput input,
+            XVector position,
+            XSpecialEffects specialEffects,
+            Runnable handleDeath
+    ) {
         super(position, RADIUS);
-        this.size = size;
+        this.canvasSize = canvasSize;
         this.input = input;
         this.motor = new XThruster(
                 this.position,
@@ -86,7 +92,7 @@ class XPlayer extends XCircle {
             // Update physics state.
             this.direction += this.dirSpeed;
             this.position.iAdd(this.velocity);
-            this.position.clampXY(this.size);
+            this.position.clampXY(this.canvasSize);
         }
     }
 

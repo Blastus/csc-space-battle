@@ -16,7 +16,7 @@ class XHyperspaceManager {
     private static final int DEAD_PARTICLE_SIZE = 15;
     private static final int DEAD_PARTICLE_COUNT = 60;
     private static final int DEAD_LIFE_SPAN = 3000;
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final XInput input;
     private final XPlayer player;
     private final XAsteroidManager asteroidManager;
@@ -25,7 +25,7 @@ class XHyperspaceManager {
     private long hyperspaceTimer;
 
     XHyperspaceManager(
-            Dimension size,
+            Dimension canvasSize,
             XInput input,
             XPlayer player,
             XAsteroidManager asteroidManager,
@@ -33,7 +33,7 @@ class XHyperspaceManager {
             XWeaponManager weaponManager,
             long currentTime
     ) {
-        this.size = size;
+        this.canvasSize = canvasSize;
         this.input = input;
         this.player = player;
         this.asteroidManager = asteroidManager;
@@ -62,7 +62,7 @@ class XHyperspaceManager {
         XVector playerPosition = this.player.getPosition();
         XVector backupPosition = playerPosition.copy();
         if (IntStream.range(0, PATIENCE).filter(a -> {
-            playerPosition.random(this.size);
+            playerPosition.random(this.canvasSize);
             return cheating || !this.asteroidManager.getAsteroids().stream().anyMatch(
                     asteroid -> asteroid.overlaps(this.player, SAFETY_FACTOR)
             );

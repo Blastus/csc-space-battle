@@ -14,15 +14,15 @@ class XDebris extends XCircle {
             XColor.YELLOW,
             XColor.WHITE
     };
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final XVector velocity;
     private final double heat;
     private final int fadeTime;
     private final long bornTime;
 
-    XDebris(Dimension size, XVector position, XVector velocity, int radius, long currentTime) {
+    XDebris(Dimension canvasSize, XVector position, XVector velocity, int radius, long currentTime) {
         super(position, radius);
-        this.size = size;
+        this.canvasSize = canvasSize;
         this.velocity = velocity;
         this.heat = XRandom.sUniform(MIN_HEAT, MAX_HEAT);
         this.fadeTime = XRandom.sRandInt(MIN_FADE_TIME, MAX_FADE_TIME);
@@ -37,8 +37,8 @@ class XDebris extends XCircle {
         if (!this.position.inBox(
                 0 - this.radius,
                 0 - this.radius,
-                this.size.getWidth() + this.radius,
-                this.size.getHeight() + this.radius
+                this.canvasSize.getWidth() + this.radius,
+                this.canvasSize.getHeight() + this.radius
         ))
             // Signal the caller to remove the debris.
             return true;

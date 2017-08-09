@@ -15,13 +15,13 @@ class XGuidedMissile extends XWeapon {
     private final XThruster motor;
 
     XGuidedMissile(
-            Dimension size,
+            Dimension canvasSize,
             XVector position,
             XVector velocity,
             XAsteroidManager asteroidManager,
             long currentTime
     ) {
-        super(size, position, velocity, MISSILE_RADIUS, MISSILE_LIFE_SPAN, currentTime);
+        super(canvasSize, position, velocity, MISSILE_RADIUS, MISSILE_LIFE_SPAN, currentTime);
         this.target = asteroidManager.findClosest(this.position);
         this.motor = new XThruster(
                 this.position,

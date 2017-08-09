@@ -18,7 +18,7 @@ class XLightningSegment {
             XColor.WHITE,
             XColor.YELLOW
     };
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final XVector position;
     private final double direction;
     private final XAsteroidManager asteroidManager;
@@ -29,7 +29,7 @@ class XLightningSegment {
     private int frames;
 
     XLightningSegment(
-            Dimension size,
+            Dimension canvasSize,
             XVector position,
             double direction,
             XAsteroidManager asteroidManager,
@@ -37,11 +37,11 @@ class XLightningSegment {
             XWeaponManager weaponManager,
             long currentTime
     ) {
-        this(size, position, direction, asteroidManager, tag, weaponManager, 1, currentTime);
+        this(canvasSize, position, direction, asteroidManager, tag, weaponManager, 1, currentTime);
     }
 
     private XLightningSegment(
-            Dimension size,
+            Dimension canvasSize,
             XVector position,
             double direction,
             XAsteroidManager asteroidManager,
@@ -50,7 +50,7 @@ class XLightningSegment {
             int treeDepth,
             long currentTime
     ) {
-        this.size = size;
+        this.canvasSize = canvasSize;
         this.position = position;
         this.direction = direction + XRandom.sUniform(-DIRECTION_DEVIANCE, +DIRECTION_DEVIANCE);
         this.asteroidManager = asteroidManager;
@@ -71,11 +71,16 @@ class XLightningSegment {
 
     void move(ArrayList<XLightningSegment> created, long currentTime) {
         // Create more segments as necessary.
-        if (this.frames == FRAME_MOVE_DELAY && this.endPoint.inBox(0, 0, this.size.getWidth(), this.size.getHeight())) {
+        if (this.frames == FRAME_MOVE_DELAY && this.endPoint.inBox(
+                0,
+                0,
+                this.canvasSize.getWidth(),
+                this.canvasSize.getHeight()
+        )) {
             if (this.treeDepth < MIN_TREE_DEPTH || XRandom.sRandom() >
                     1.0 * (this.treeDepth - MIN_TREE_DEPTH) / (MAX_TREE_DEPTH - MIN_TREE_DEPTH))
                 created.add(new XLightningSegment(
-                        this.size,
+                        this.canvasSize,
                         this.endPoint,
                         this.direction,
                         this.asteroidManager,
@@ -86,7 +91,7 @@ class XLightningSegment {
                 ));
             if (XRandom.sRandom() <= BRANCH_RATE) {
                 created.add(new XLightningSegment(
-                        this.size,
+                        this.canvasSize,
                         this.endPoint,
                         this.direction + (Double) XRandom.sChoice(-BRANCH_DEVIANCE, +BRANCH_DEVIANCE),
                         this.asteroidManager,

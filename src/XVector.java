@@ -208,14 +208,14 @@ class XVector {
         this.y = Math.pow(this.y, other.y);
     }
 
-    void random(Dimension size) {
-        this.x = XRandom.sUniform(size.getWidth());
-        this.y = XRandom.sUniform(size.getHeight());
+    void random(Dimension canvasSize) {
+        this.x = XRandom.sUniform(canvasSize.getWidth());
+        this.y = XRandom.sUniform(canvasSize.getHeight());
     }
 
-    void clampXY(Dimension size) {
-        double width = size.getWidth();
-        double height = size.getHeight();
+    void clampXY(Dimension canvasSize) {
+        double width = canvasSize.getWidth();
+        double height = canvasSize.getHeight();
         this.x = (this.x % width + width) % width;
         this.y = (this.y % height + height) % height;
     }

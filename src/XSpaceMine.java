@@ -13,8 +13,8 @@ class XSpaceMine extends XWeapon {
             XColor.BLACK.interpolate(0.5, XColor.GREEN)
     };
 
-    XSpaceMine(Dimension size, XVector position, long currentTime) {
-        super(size, position, new XVector(), MINE_RADIUS, MINE_LIFE_SPAN, currentTime);
+    XSpaceMine(Dimension canvasSize, XVector position, long currentTime) {
+        super(canvasSize, position, new XVector(), MINE_RADIUS, MINE_LIFE_SPAN, currentTime);
     }
 
     void draw(Graphics surface, long currentTime) {

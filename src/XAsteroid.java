@@ -16,14 +16,14 @@ class XAsteroid extends XCircle {
     private static final double MAX_CRATER_DIAMETER_RATIO = 1.25;
     private static final int CRATER_DIAMETER_DIVISOR = 5;
     private static final double CRATER_DISTANCE_SCALE = 0.75;
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final XVector velocity;
     private final BufferedImage buffer;
     private int tag;
 
-    XAsteroid(Dimension size, XCircle shape, XVector velocity) {
+    XAsteroid(Dimension canvasSize, XCircle shape, XVector velocity) {
         super(shape);
-        this.size = size;
+        this.canvasSize = canvasSize;
         this.velocity = velocity;
         this.tag = 0;
         this.buffer = new BufferedImage(this.diameter, this.diameter, BufferedImage.TYPE_INT_ARGB);
@@ -69,7 +69,7 @@ class XAsteroid extends XCircle {
 
     void move() {
         this.position.iAdd(this.velocity);
-        this.position.clampXY(this.size);
+        this.position.clampXY(this.canvasSize);
     }
 
     void draw(Graphics surface) {

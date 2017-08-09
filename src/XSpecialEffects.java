@@ -18,15 +18,15 @@ class XSpecialEffects {
     private static final double MAX_DEBRIS_VELOCITY = 1.5;
     private static final int EXPLOSION_EMITTER_LIFE_SPAN = 500;
     private static final int HYPERSPACE_EMITTER_LIFE_SPAN = 1000;
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final ArrayList<XDebris> debris;
     private final ArrayList<XExplosion> explosions;
     private final ArrayList<XTimothyHyperspace> timothyHyperspaces;
     private final ArrayList<XTimothyExplosion> timothyExplosions;
     private boolean useNewEffects;
 
-    XSpecialEffects(Dimension size) {
-        this.size = size;
+    XSpecialEffects(Dimension canvasSize) {
+        this.canvasSize = canvasSize;
         this.debris = new ArrayList<>();
         this.explosions = new ArrayList<>();
         this.timothyHyperspaces = new ArrayList<>();
@@ -41,7 +41,7 @@ class XSpecialEffects {
                     asteroid.getVelocity().getMagnitude() * XRandom.sUniform(MIN_DEBRIS_VELOCITY, MAX_DEBRIS_VELOCITY),
                     XRandom.sVonMisesVariate()
             );
-            this.debris.add(new XDebris(this.size, position, velocity, XRandom.sRandInt(1, 2), currentTime));
+            this.debris.add(new XDebris(this.canvasSize, position, velocity, XRandom.sRandInt(1, 2), currentTime));
         });
     }
 
