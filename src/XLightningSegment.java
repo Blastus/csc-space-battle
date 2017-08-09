@@ -26,7 +26,6 @@ class XLightningSegment {
     private final XWeaponManager weaponManager;
     private final XVector endPoint;
     private final int treeDepth;
-    private final ArrayList<XLightningSegment> segments;
     private int frames;
 
     XLightningSegment(
@@ -36,10 +35,9 @@ class XLightningSegment {
             XAsteroidManager asteroidManager,
             int tag,
             XWeaponManager weaponManager,
-            ArrayList<XLightningSegment> segments,
             long currentTime
     ) {
-        this(size, position, direction, asteroidManager, tag, weaponManager, 1, segments, currentTime);
+        this(size, position, direction, asteroidManager, tag, weaponManager, 1, currentTime);
     }
 
     private XLightningSegment(
@@ -50,7 +48,6 @@ class XLightningSegment {
             int tag,
             XWeaponManager weaponManager,
             int treeDepth,
-            ArrayList<XLightningSegment> segments,
             long currentTime
     ) {
         this.size = size;
@@ -69,7 +66,6 @@ class XLightningSegment {
         } else
             this.endPoint = position.add(XVector.polar(SEGMENT_LENGTH, this.direction));
         this.treeDepth = treeDepth;
-        this.segments = segments;
         this.frames = 0;
     }
 
@@ -86,7 +82,6 @@ class XLightningSegment {
                         this.tag,
                         this.weaponManager,
                         this.treeDepth + 1,
-                        this.segments,
                         currentTime
                 ));
             if (XRandom.sRandom() <= BRANCH_RATE) {
@@ -98,7 +93,6 @@ class XLightningSegment {
                         this.tag,
                         this.weaponManager,
                         this.treeDepth + 1,
-                        this.segments,
                         currentTime
                 ));
             }
