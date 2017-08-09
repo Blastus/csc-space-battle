@@ -11,6 +11,7 @@ class XGuidedMissile extends XWeapon {
     private static final int MIN_MOTOR_PARTICLE_LENGTH = 10;
     private static final int MAX_MOTOR_PARTICLE_LENGTH = 15;
     private static final double MOTOR_PARTICLE_DEVIANCE = 0.3;
+    private static final int IMPULSE_STRENGTH = 2;
     private final XAsteroid target;
     private final XThruster motor;
 
@@ -34,9 +35,9 @@ class XGuidedMissile extends XWeapon {
 
     void move() {
         // Push missile in direction of target.
-        XVector vectorToTarget = this.target.getPosition().sub(this.position);
-        vectorToTarget.setMagnitude(2);
-        this.velocity.iAdd(vectorToTarget);
+        XVector impulse = this.target.getPosition().sub(this.position);
+        impulse.setMagnitude(IMPULSE_STRENGTH);
+        this.velocity.iAdd(impulse);
         // Respect the missile's max speed.
         this.velocity.clampMagnitude(XWeaponManager.MAX_WEAPON_SPEED);
         super.move();
