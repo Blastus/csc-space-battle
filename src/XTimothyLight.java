@@ -44,7 +44,7 @@ class XTimothyLight {
             // Let the caller know that the light is done.
             return true;
         surface.setColor(XColor.interpolate(ratio, this.palette));
-        int diameter = this.startDiameter + (int) ((this.stopDiameter - this.startDiameter) * ratio);
+        int diameter = XRandom.interpolate(this.startDiameter, this.stopDiameter, ratio);
         int radius = diameter >> 1;
         surface.fillOval(this.position.getIntX() - radius, this.position.getIntY() - radius, diameter, diameter);
         // Let the caller know that the light is not done.
