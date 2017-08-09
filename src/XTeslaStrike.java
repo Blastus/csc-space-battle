@@ -25,7 +25,6 @@ class XTeslaStrike {
                 asteroidManager,
                 XTeslaStrike.tag++,
                 weaponManager,
-                this.segments,
                 currentTime
         ));
     }
