@@ -34,7 +34,7 @@ class XWeaponManager {
             "Tesla Strike"
     };
     private static final int HYPERSPACE_STORM_SIZE = 50;
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final XAsteroidManager asteroidManager;
     private final XHealthManager healthManager;
     private final XInput input;
@@ -46,14 +46,14 @@ class XWeaponManager {
     private long lastFireTime;
 
     XWeaponManager(
-            Dimension size,
+            Dimension canvasSize,
             XAsteroidManager asteroidManager,
             XHealthManager healthManager,
             XInput input,
             XPlayer player,
             XSpecialEffects specialEffects
     ) {
-        this.size = size;
+        this.canvasSize = canvasSize;
         this.asteroidManager = asteroidManager;
         this.healthManager = healthManager;
         this.input = input;
@@ -108,7 +108,7 @@ class XWeaponManager {
         if (requestedWeapon != 0) {
             double timeSinceLastFire = currentTime - this.lastFireTime;
             double status = Math.min(1.0, timeSinceLastFire / WEAPON_COOLING_TIMES[requestedWeapon]);
-            XVector canvasAnchorPosition = new XVector(0, this.size.getHeight());
+            XVector canvasAnchorPosition = new XVector(0, this.canvasSize.getHeight());
             XVector figureAnchorPosition = new XVector(0, STATUS_HEIGHT);
             XVector finalPosition = canvasAnchorPosition.sub(figureAnchorPosition).add(offset);
             surface.setColor(XColor.interpolate(status, STATUS_PALETTE));
@@ -134,7 +134,7 @@ class XWeaponManager {
 
     void requestLightningHit(XVector position, long currentTime) {
         // A generic weapon will exist for less than one frame and can destroy an asteroid.
-        this.weapons.add(new XWeapon(this.size, position, currentTime));
+        this.weapons.add(new XWeapon(this.canvasSize, position, currentTime));
     }
 
     void handleFireRequest(long currentTime) {
@@ -148,7 +148,7 @@ class XWeaponManager {
                 case 0:
                     // Rotary Cannon
                     this.newWeapons.add(new XRotaryCannon(
-                            this.size,
+                            this.canvasSize,
                             this.player.getPosition().copy(),
                             this.getProjectileVelocity(),
                             currentTime
@@ -157,7 +157,7 @@ class XWeaponManager {
                 case 1:
                     // Guided Missile
                     this.newWeapons.add(new XGuidedMissile(
-                            this.size,
+                            this.canvasSize,
                             this.player.getPosition().copy(),
                             this.getProjectileVelocity(),
                             this.asteroidManager,
@@ -166,16 +166,16 @@ class XWeaponManager {
                     break;
                 case 2:
                     // Space Mine
-                    this.newWeapons.add(new XSpaceMine(this.size, this.player.getPosition().copy(), currentTime));
+                    this.newWeapons.add(new XSpaceMine(this.canvasSize, this.player.getPosition().copy(), currentTime));
                     break;
                 case 3:
                     // Cluster Crack
-                    this.newWeapons.addAll(XClusterCrack.fire(this.size, this.player, currentTime));
+                    this.newWeapons.addAll(XClusterCrack.fire(this.canvasSize, this.player, currentTime));
                     break;
                 case 4:
                     // Tesla Strike
                     this.teslaStrike = new XTeslaStrike(
-                            this.size,
+                            this.canvasSize,
                             this.player,
                             this.asteroidManager,
                             this,
@@ -199,7 +199,7 @@ class XWeaponManager {
     void initiateHyperspaceStorm(long currentTime) {
         IntStream.range(0, HYPERSPACE_STORM_SIZE).forEach(a -> {
             XVector position = new XVector();
-            position.random(this.size);
+            position.random(this.canvasSize);
             this.specialEffects.spawn(
                     position,
                     HYPERSPACE_STORM_EFFECT_SIZE,
@@ -210,7 +210,7 @@ class XWeaponManager {
                     currentTime
             );
             this.weapons.add(new XWeapon(
-                    this.size,
+                    this.canvasSize,
                     position,
                     (int) (HYPERSPACE_STORM_EFFECT_SIZE * XExplosion.START_SIZE / 2),
                     currentTime

@@ -11,7 +11,7 @@ class XTeslaStrike {
     private final ArrayList<XLightningSegment> segments;
 
     XTeslaStrike(
-            Dimension size,
+            Dimension canvasSize,
             XPlayer player,
             XAsteroidManager asteroidManager,
             XWeaponManager weaponManager,
@@ -19,7 +19,7 @@ class XTeslaStrike {
     ) {
         this.segments = new ArrayList<>();
         this.segments.add(new XLightningSegment(
-                size,
+                canvasSize,
                 player.getNosePosition(),
                 player.getDirection(),
                 asteroidManager,

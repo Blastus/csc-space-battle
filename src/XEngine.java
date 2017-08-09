@@ -37,11 +37,11 @@ class XEngine implements ActionListener {
         this.input = input;
         this.context = context;
         this.shutdown = shutdown;
-        Dimension size = context.getSize();
-        this.specialEffects = new XSpecialEffects(size);
+        Dimension canvasSize = context.getSize();
+        this.specialEffects = new XSpecialEffects(canvasSize);
         long currentTime = System.currentTimeMillis();
         this.player = new XPlayer(
-                size,
+                canvasSize,
                 this.input,
                 new XVector(context.getWidth() >> 1, context.getHeight() >> 1),
                 this.specialEffects,
@@ -52,11 +52,15 @@ class XEngine implements ActionListener {
                 }
         );
         this.enableCheating = false;
-        this.starField = new XStarField(size);
-        this.asteroidManager = new XAsteroidManager(size, this.player, this.specialEffects);
-        this.healthManager = new XHealthManager(size, XPlayer.getShape(XPlayer.INITIAL_PLAYER_DIRECTION), TEXT_STYLE);
+        this.starField = new XStarField(canvasSize);
+        this.asteroidManager = new XAsteroidManager(canvasSize, this.player, this.specialEffects);
+        this.healthManager = new XHealthManager(
+                canvasSize,
+                XPlayer.getShape(XPlayer.INITIAL_PLAYER_DIRECTION),
+                TEXT_STYLE
+        );
         this.weaponManager = new XWeaponManager(
-                size,
+                canvasSize,
                 this.asteroidManager,
                 this.healthManager,
                 this.input,
@@ -64,7 +68,7 @@ class XEngine implements ActionListener {
                 this.specialEffects
         );
         this.hyperspaceManager = new XHyperspaceManager(
-                size,
+                canvasSize,
                 this.input,
                 this.player,
                 this.asteroidManager,
@@ -72,8 +76,8 @@ class XEngine implements ActionListener {
                 this.weaponManager,
                 currentTime
         );
-        this.weaponWriter = new XTextWriter(size, TEXT_STYLE, WEAPON_COLOR);
-        this.pointsWriter = new XTextWriter(size, TEXT_STYLE, POINTS_COLOR);
+        this.weaponWriter = new XTextWriter(canvasSize, TEXT_STYLE, WEAPON_COLOR);
+        this.pointsWriter = new XTextWriter(canvasSize, TEXT_STYLE, POINTS_COLOR);
     }
 
     public void actionPerformed(ActionEvent event) {

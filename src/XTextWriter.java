@@ -7,25 +7,25 @@ import java.awt.geom.Rectangle2D;
 class XTextWriter {
     private static final double FOREGROUND_TO_BACKGROUND_BIAS = 0.5;
     private static final int SHADOW_OFFSET = 2;
-    private final Dimension size;
+    private final Dimension canvasSize;
     private final Font typeface;
     private final XColor foreground;
     private final XColor background;
 
-    XTextWriter(Dimension size, Font typeface, XColor foreground) {
-        this(size, typeface, foreground, XColor.BLACK.interpolate(FOREGROUND_TO_BACKGROUND_BIAS, foreground));
+    XTextWriter(Dimension canvasSize, Font typeface, XColor foreground) {
+        this(canvasSize, typeface, foreground, XColor.BLACK.interpolate(FOREGROUND_TO_BACKGROUND_BIAS, foreground));
     }
 
-    XTextWriter(Dimension size, Font typeface, XColor foreground, XColor background) {
-        this.size = size;
+    XTextWriter(Dimension canvasSize, Font typeface, XColor foreground, XColor background) {
+        this.canvasSize = canvasSize;
         this.typeface = typeface;
         this.foreground = foreground;
         this.background = background;
     }
 
     void write(Graphics surface, String text, XAnchor canvasAnchor, XAnchor stringAnchor, XVector offset) {
-        double canvasWidth = this.size.getWidth();
-        double canvasHeight = this.size.getHeight();
+        double canvasWidth = this.canvasSize.getWidth();
+        double canvasHeight = this.canvasSize.getHeight();
         XVector canvasAnchorPosition = this.getAnchorPosition(canvasAnchor, (int) canvasWidth, (int) canvasHeight);
         this.write(surface, text, canvasAnchorPosition.add(offset), stringAnchor);
     }
@@ -39,7 +39,11 @@ class XTextWriter {
         XVector stringAnchorPosition = this.getAnchorPosition(stringAnchor, (int) stringWidth, (int) stringHeight);
         XVector finalPosition = startingPoint.sub(stringAnchorPosition);
         surface.setColor(this.background);
-        surface.drawString(text, finalPosition.getIntX() + SHADOW_OFFSET, finalPosition.getIntY() + SHADOW_OFFSET);
+        surface.drawString(
+                text,
+                finalPosition.getIntX() + SHADOW_OFFSET,
+                finalPosition.getIntY() + SHADOW_OFFSET
+        );
         surface.setColor(this.foreground);
         surface.drawString(text, finalPosition.getIntX(), finalPosition.getIntY());
     }
