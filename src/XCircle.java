@@ -41,15 +41,15 @@ class XCircle {
     }
 
     boolean contains(XVector value) {
-        return this.position.sub(value).getMagnitude() <= this.radius;
+        return this.position.getDistance(value) <= this.radius;
     }
 
     boolean contains(XCircle other) {
-        return this.position.sub(other.position).getMagnitude() + other.radius <= this.radius;
+        return this.position.getDistance(other.position) + other.radius <= this.radius;
     }
 
     boolean containsWithMargin(XCircle other) {
-        return this.position.sub(other.position).getMagnitude() + other.diameter <= this.radius;
+        return this.position.getDistance(other.position) + other.diameter <= this.radius;
     }
 
     boolean overlaps(XCircle other) {
@@ -57,14 +57,14 @@ class XCircle {
     }
 
     boolean overlaps(XCircle other, int safetyFactor) {
-        return this.position.sub(other.position).getMagnitude() / safetyFactor < this.radius + other.radius;
+        return this.position.getDistance(other.position) / safetyFactor < this.radius + other.radius;
     }
 
     boolean overlaps(XCircle other, double distanceScale) {
-        return this.position.sub(other.position).getMagnitude() * distanceScale < this.radius + other.radius;
+        return this.position.getDistance(other.position) * distanceScale < this.radius + other.radius;
     }
 
     double getMarginalDistance(XCircle other) {
-        return this.position.sub(other.position).getMagnitude() - this.radius - other.radius;
+        return this.position.getDistance(other.position) - this.radius - other.radius;
     }
 }
