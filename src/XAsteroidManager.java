@@ -56,7 +56,7 @@ class XAsteroidManager {
         ArrayList<XAsteroid> collisions = this.asteroids.stream().filter(asteroid -> {
             asteroid.move();
             return this.player.isAlive() && asteroid.overlaps(this.player);
-        }).collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
+        }).collect(Collectors.toCollection(ArrayList::new));
         if (collisions.size() > 0) {
             if (!cheating)
                 this.player.kill(currentTime);
@@ -90,7 +90,7 @@ class XAsteroidManager {
     ArrayList<XAsteroid> findInRange(XWeapon weapon) {
         return this.asteroids.stream()
                 .filter(asteroid -> asteroid.overlaps(weapon))
-                .collect(Collectors.toCollection(ArrayList<XAsteroid>::new));
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     void destroy(ArrayList<XAsteroid> asteroids, long currentTime) {

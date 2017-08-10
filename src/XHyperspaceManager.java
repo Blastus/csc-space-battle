@@ -63,7 +63,7 @@ class XHyperspaceManager {
         XVector backupPosition = playerPosition.copy();
         if (IntStream.range(0, PATIENCE).filter(a -> {
             playerPosition.random(this.canvasSize);
-            return cheating || !this.asteroidManager.getAsteroids().stream().anyMatch(
+            return cheating || this.asteroidManager.getAsteroids().stream().noneMatch(
                     asteroid -> asteroid.overlaps(this.player, SAFETY_FACTOR)
             );
         }).findFirst().isPresent()) {
