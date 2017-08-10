@@ -16,8 +16,10 @@ class XSpecialEffects {
     };
     private static final double MIN_DEBRIS_VELOCITY = 0.5;
     private static final double MAX_DEBRIS_VELOCITY = 1.5;
-    private static final int EXPLOSION_EMITTER_LIFE_SPAN = 500;
+    private static final int MIN_DEBRIS_RADIUS = 1;
+    private static final int MAX_DEBRIS_RADIUS = 2;
     private static final int HYPERSPACE_EMITTER_LIFE_SPAN = 1000;
+    private static final int EXPLOSION_EMITTER_LIFE_SPAN = 500;
     private final Dimension canvasSize;
     private final ArrayList<XDebris> debris;
     private final ArrayList<XExplosion> explosions;
@@ -35,13 +37,20 @@ class XSpecialEffects {
     }
 
     void spawn(XAsteroid asteroid, long currentTime) {
+        double baseSpeed = asteroid.getVelocity().getMagnitude();
         IntStream.range(0, asteroid.getRadius()).forEach(a -> {
             XVector position = asteroid.getPosition().copy();
             XVector velocity = XVector.polar(
-                    asteroid.getVelocity().getMagnitude() * XRandom.sUniform(MIN_DEBRIS_VELOCITY, MAX_DEBRIS_VELOCITY),
+                    baseSpeed * XRandom.sUniform(MIN_DEBRIS_VELOCITY, MAX_DEBRIS_VELOCITY),
                     XRandom.sVonMisesVariate()
             );
-            this.debris.add(new XDebris(this.canvasSize, position, velocity, XRandom.sRandInt(1, 2), currentTime));
+            this.debris.add(new XDebris(
+                    this.canvasSize,
+                    position,
+                    velocity,
+                    XRandom.sRandInt(MIN_DEBRIS_RADIUS, MAX_DEBRIS_RADIUS),
+                    currentTime
+            ));
         });
     }
 
@@ -87,6 +96,7 @@ class XSpecialEffects {
 
     void drawExplosions(Graphics surface, long currentTime) {
         this.explosions.removeIf(explosion -> explosion.draw(surface, currentTime));
+        // Hyperspace is before explosion because explosions are drawn on top of hyperspaces.
         this.timothyHyperspaces.removeIf(hyperspace -> hyperspace.draw(surface, currentTime));
         this.timothyExplosions.removeIf(explosion -> explosion.draw(surface, currentTime));
     }
