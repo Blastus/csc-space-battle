@@ -228,4 +228,8 @@ class XVector {
     boolean inBox(double minX, double minY, double maxX, double maxY) {
         return minX <= this.x && this.x <= maxX && minY <= this.y && this.y <= maxY;
     }
+
+    double getDistance(XVector other) {
+        return this.sub(other).getMagnitude();
+    }
 }

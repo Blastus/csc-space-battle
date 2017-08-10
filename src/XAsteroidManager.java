@@ -42,7 +42,7 @@ class XAsteroidManager {
         IntStream.range(0, this.currentAsteroidCount).forEach(a -> {
             do {
                 asteroidPosition.random(this.canvasSize);
-            } while (asteroidPosition.sub(playerPosition).getMagnitude() < safetyMargin);
+            } while (asteroidPosition.getDistance(playerPosition) < safetyMargin);
             this.asteroids.add(new XAsteroid(
                     this.canvasSize,
                     new XCircle(asteroidPosition.copy(), STARTING_ASTEROID_RADIUS),
