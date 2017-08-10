@@ -57,7 +57,7 @@ class XAsteroid extends XCircle {
                         XRandom.sUniform(-this.radius, +this.radius)
                 );
                 return referenceShape.containsWithMargin(craterDescription) &&
-                        !craters.stream().anyMatch(crater -> craterDescription.overlaps(crater, CRATER_DISTANCE_SCALE));
+                        craters.stream().noneMatch(crater -> craterDescription.overlaps(crater, CRATER_DISTANCE_SCALE));
             }).findFirst().ifPresent(b -> craters.add(new XCrater(craterDescription)));
         });
         // Draw the craters.
